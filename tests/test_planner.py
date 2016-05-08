@@ -11,8 +11,11 @@ from ompl import geometric as og
 
 def sanity_check():
     obs = [np.array([[0, 0], [1, 0], [1, 0]])]
-    planner = flatland.FLPlanner(10, og.PRMstar, obs)
-    res = planner.solve()
+    start = np.array([0, 0])
+    goal = np.array([3, 3])
+    planner = flatland.FLPlanner(
+        dim=10, planner=og.PRMstar, obstacles=obs)
+    res = planner.solve(start, goal)
     res.write_to_file("sandbox/prmpath.txt")
 
 

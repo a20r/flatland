@@ -37,7 +37,7 @@ class FLPlanner(object):
                     return False
         return True
 
-    def solve(self):
+    def solve(self, st, gl):
         space = ob.RealVectorStateSpace(self.dim)
         bounds = ob.RealVectorBounds(self.dim)
         bounds.setLow(-10)
@@ -47,11 +47,12 @@ class FLPlanner(object):
         si.setStateValidityChecker(
             ob.StateValidityCheckerFn(self.is_state_valid))
         start = ob.State(space)
-        start.random()
-        start()[0] = -5
+        start[0] = st[0]
+        start[1] = st[1]
         goal = ob.State(space)
         goal.random()
-        goal()[0] = 5
+        goal[0] = gl[0]
+        goal[1] = gl[1]
         planner_def = ob.ProblemDefinition(si)
         planner_def.setStartAndGoalStates(start, goal)
         ompl_planner = self.planner(si)
