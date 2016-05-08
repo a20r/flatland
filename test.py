@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-import numpy as np
-from matplotlib.path import Path
+
 from ompl import base as ob
 from ompl import geometric as og
 
 
 def isStateValid(state):
-    poly = Path(np.array([[0, 0],
-                          [1, 0],
-                          [1, 1]]))
-    return not poly.contains_point((state[0], state[1]))
+    # Some arbitrary condition on the state (note that thanks to
+    # dynamic type checking we can just call getX() and do not need
+    # to convert state to an SE2State.)
+    return state[0] < 8
 
 
 def planWithSimpleSetup():
