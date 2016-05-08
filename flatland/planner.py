@@ -35,8 +35,8 @@ class FLPlanner(object):
         return not poly.contains_point((state[0], state[1]))
 
     def solve(self):
-        space = ob.RealVectorStateSpace(8)
-        bounds = ob.RealVectorBounds(8)
+        space = ob.RealVectorStateSpace(self.dim)
+        bounds = ob.RealVectorBounds(self.dim)
         bounds.setLow(-10)
         bounds.setHigh(10)
         space.setBounds(bounds)

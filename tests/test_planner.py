@@ -9,7 +9,7 @@ from ompl import geometric as og
 
 
 def sanity_check():
-    planner = flatland.FLPlanner(8, og.PRMstar)
+    planner = flatland.FLPlanner(10, og.PRMstar)
     res = planner.solve()
     res.write_to_file("sandbox/prmpath.txt")
 
