@@ -1,7 +1,7 @@
 
-import numpy as np
 from matplotlib.path import Path
 from ompl import base as ob
+from ompl import geometric as og
 
 
 class FLSolution(object):
@@ -24,15 +24,18 @@ class FLSolution(object):
 
 class FLPlanner(object):
 
-    def __init__(self, dim, planner):
+    def __init__(self, dim=2, planner=og.PRMstar, obstacles=list()):
         self.dim = dim
         self.planner = planner
+        self.obstacles = obstacles
 
     def is_state_valid(self, state):
-        poly = Path(np.array([[0, 0],
-                              [1, 0],
-                              [1, 1]]))
-        return not poly.contains_point((state[0], state[1]))
+        for i in xrange(self.dim / 2):
+            for obst in self.obstacles:
+                poly = Path(obst)
+                if poly.contains_point((state[2 * i], state[2 * i + 1])):
+                    return False
+        return True
 
     def solve(self):
         space = ob.RealVectorStateSpace(self.dim)
