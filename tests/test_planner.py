@@ -10,7 +10,7 @@ from ompl import geometric as og
 
 
 def sanity_check():
-    obs = [np.array([[0, 0], [1, 0], [1, 0]])]
+    obs = [np.array([[0, 0], [1, 0], [1, 1]])]
     start = np.array([0, 0])
     goal = np.array([3, 3])
     planner = flatland.FLPlanner(

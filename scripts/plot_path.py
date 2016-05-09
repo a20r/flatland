@@ -4,7 +4,7 @@ import os
 import pdb
 
 rrtPath = "sandbox/prmpath.txt"
-obstacleFolder = 'obstacles/'
+obstacleFolder = 'sandbox/obstacles/'
 
 fig1 = plt.figure()
 
