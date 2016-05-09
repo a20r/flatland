@@ -33,8 +33,14 @@ def make_path_plot():
 	    ax.add_patch(patch)
 
 	txt = np.loadtxt(rrtPath)
-	plt.plot(txt[:, 0], txt[:, 1], 'b-')
+	start = txt[0,:]
+	goal = txt[-1,:]
 
+	startCircle = plt.Circle(start,0.3,color='g', zorder=2)
+	goalCircle = plt.Circle(goal,0.3,color='r', zorder=2)
+	fig1.gca().add_artist(startCircle)
+	fig1.gca().add_artist(goalCircle)
+	plt.plot(txt[:, 0], txt[:, 1], 'bo-', zorder=1)
 
 if __name__ == "__main__":
 	make_path_plot()
