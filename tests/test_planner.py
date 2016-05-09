@@ -16,7 +16,7 @@ def sanity_check():
     planner = flatland.FLPlanner(
         dim=10, planner=og.PRMstar, obstacles=obs)
     res = planner.solve(start, goal)
-    res.write_to_file("sandbox/prmpath.txt")
+    res.write_to_file("sandbox/rrtpath.txt")
 
 
 if __name__ == "__main__":
