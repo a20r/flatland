@@ -14,7 +14,7 @@ def sanity_check():
     start = np.array([0, 0])
     goal = np.array([3, 3])
     planner = flatland.FLPlanner(
-        dim=10, planner=og.PRMstar, obstacles=obs)
+        dim=2, planner=og.PRMstar, obstacles=obs)
     res = planner.solve(start, goal)
     res.write_to_file("sandbox/rrtpath.txt")
 

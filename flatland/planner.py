@@ -26,11 +26,12 @@ class FLSolution(object):
 
 class FLPlanner(object):
 
-    def __init__(self, dim=2, planner=og.PRMstar, obstacles=list()):
-        self.dim = dim
-        self.planner = planner
-        self.obstacles = obstacles
-        self.save_obstacles()
+    def __init__(self, **kwargs):
+        self.dim = kwargs.get("dim", 2)
+        self.planner = kwargs.get("planner", og.PRMstar)
+        self.obstacles = kwargs.get("obstacles", list())
+        self.low_bound = kwargs.get("low_bound", -10)
+        self.high_bound = kwargs.get("high_bound", 10)
 
     def save_obstacles(self):
         obstacleFolder = 'sandbox/obstacles/'
@@ -50,28 +51,30 @@ class FLPlanner(object):
                     return False
         return True
 
-    def solve(self, st, gl):
+    def set_state(self, state, arr):
+        for i in xrange(self.dim):
+            state()[i] = arr[i]
+        return self
+
+    def solve(self, st, gl, timeout=1.0):
         space = ob.RealVectorStateSpace(self.dim)
         bounds = ob.RealVectorBounds(self.dim)
-        bounds.setLow(-10)
-        bounds.setHigh(10)
+        bounds.setLow(self.low_bound)
+        bounds.setHigh(self.high_bound)
         space.setBounds(bounds)
         si = ob.SpaceInformation(space)
         si.setStateValidityChecker(
             ob.StateValidityCheckerFn(self.is_state_valid))
         start = ob.State(space)
-        start[0] = st[0]
-        start[1] = st[1]
         goal = ob.State(space)
-        goal.random()
-        goal[0] = gl[0]
-        goal[1] = gl[1]
+        self.set_state(start, st)
+        self.set_state(goal, gl)
         planner_def = ob.ProblemDefinition(si)
         planner_def.setStartAndGoalStates(start, goal)
         ompl_planner = self.planner(si)
         ompl_planner.setProblemDefinition(planner_def)
         ompl_planner.setup()
-        planner_solved = ompl_planner.solve(1.0)
+        planner_solved = ompl_planner.solve(timeout)
 
         if planner_solved:
             return FLSolution(planner_def)
