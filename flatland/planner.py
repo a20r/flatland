@@ -4,7 +4,7 @@ from ompl import base as ob
 from ompl import geometric as og
 import os
 import numpy as np
-import pdb
+
 
 class FLSolution(object):
 
@@ -35,16 +35,14 @@ class FLPlanner(object):
         self.save_obstacles()
 
     def save_obstacles(self):
-        obstacleFolder = 'obstacles/'
+        obstacleFolder = 'sandbox/obstacles/'
+        obstacle_tmp = obstacleFolder + "obstacle{}.txt"
         for i in os.listdir(obstacleFolder):
             obstaclePath = obstacleFolder + i
             os.remove(obstaclePath)
-        i = 1
-        for ob in self.obstacles:
-            filename = obstacleFolder + 'obstacle' + str(i) + '.txt'
-            np.savetxt(filename,ob,'%f')
-            i = i + 1
-
+        for i, obst in enumerate(self.obstacles):
+            filename = obstacle_tmp.format(i)
+            np.savetxt(filename, obst, '%f')
 
     def is_state_valid(self, state):
         for i in xrange(self.dim / 2):
