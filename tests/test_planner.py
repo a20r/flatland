@@ -5,18 +5,21 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import flatland
+import matplotlib.pyplot as plt
 import numpy as np
 from ompl import geometric as og
 
 
 def sanity_check():
-    obs = [np.array([[0, 0], [1, 0], [1, 1]])]
-    start = np.array([0, 0])
-    goal = np.array([3, 3])
+    obs = flatland.RandomObstacleGen().generate(100)
+    start = np.array([-10, -10])
+    goal = np.array([9, 9])
     planner = flatland.FLPlanner(
-        dim=2, planner=og.PRMstar, obstacles=obs)
-    res = planner.solve(start, goal)
-    res.write_to_file("sandbox/rrtpath.txt")
+        dim=2, planner=og.RRTstar, obstacles=obs)
+    res = planner.solve(start, goal, 10)
+    res.write_to_file("sandbox/prmpath.txt")
+    flatland.make_path_plot()
+    plt.show()
 
 
 if __name__ == "__main__":
