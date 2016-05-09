@@ -2,6 +2,8 @@
 from matplotlib.path import Path
 from ompl import base as ob
 from ompl import geometric as og
+import os
+import numpy as np
 
 
 class FLSolution(object):
@@ -30,6 +32,16 @@ class FLPlanner(object):
         self.obstacles = kwargs.get("obstacles", list())
         self.low_bound = kwargs.get("low_bound", -10)
         self.high_bound = kwargs.get("high_bound", 10)
+
+    def save_obstacles(self):
+        obstacleFolder = 'sandbox/obstacles/'
+        for i in os.listdir(obstacleFolder):
+            obstaclePath = obstacleFolder + i
+            os.remove(obstaclePath)
+        i = 1
+        for ob in self.obstacles:
+            filename = obstacleFolder + 'obstacle' + str(i) + '.txt'
+            np.savetxt(filename,ob[0],'%f')
 
     def is_state_valid(self, state):
         for i in xrange(self.dim / 2):

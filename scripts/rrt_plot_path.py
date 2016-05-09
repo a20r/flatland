@@ -14,7 +14,7 @@ for i in os.listdir(obstacleFolder):
         array = []
         for line in f:
             array.append([float(x) for x in line.split()])
-
+            
     plt.plot(array[0], array[1], 'r-')
     print array
 
