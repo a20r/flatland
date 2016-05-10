@@ -29,12 +29,12 @@ field_names = ["planner", "transformer", "n_collisions",
                "n_collisions_std", "planning_duration_std", "path_length_std",
                "num_failed", "n_obs"]
 
-n_obs = [10, 20, 30]
+n_obs = [30]
 n_runs = 100
 high_dim = 6
 low_dim = 4
 timeout = 1.5
-rad_mean = 7
+rad_mean = 6.5
 
 
 def run_experiments(filename):

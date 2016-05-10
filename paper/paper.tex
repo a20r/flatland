@@ -39,6 +39,7 @@ Planning}
 \newcommand{\xnearest}[0]{\ensuremath{{x_{\Var{nearest}}}}}
 \newcommand{\xnew}[0]{\ensuremath{{x_{\Var{new}}}}}
 \newcommand{\xmin}[0]{\ensuremath{{x_{\Var{min}}}}}
+\newcommand{\xparent}[0]{\ensuremath{{x_{\Var{parent}}}}}
 \newcommand{\cmin}[0]{\ensuremath{{c_{\Var{min}}}}}
 \newcommand{\cost}[0]{\ensuremath{{\Function{Cost}}}}
 \newcommand{\linef}[1]{\ensuremath{{c(\Function{Line}(#1))}}}
@@ -151,6 +152,13 @@ ncollisions, duration, length, num failed. Run each one 100 times
                         \STATE $\cmin \leftarrow C$
                     \ENDIF
                     \STATE $E \leftarrow E \cup \{(\xmin, \xnew)\}$
+                \ENDFOR
+                \FORALL{$\xnear \in X_{\Var{near}}$}
+                    \STATE $C \leftarrow \cost(\xnew) + \linef{\xnew, \xnear}$
+                    \IF{$\Function{CollisionFree}(\xnew, \xnear) \wedge C < \cost(\xnear)$}
+                        \STATE $\xparent \leftarrow \Function{Parent}(\xnear)$
+                        \STATE $E \leftarrow (E \backslash \{(\xparent, \xnear)\}) \cup \{(\xnew, \xnear)\}$
+                    \ENDIF
                 \ENDFOR
             \ENDIF
         \ENDFOR
