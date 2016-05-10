@@ -41,9 +41,7 @@ class FLPlanner(object):
             os.remove(obstaclePath)
         for i, obst in enumerate(self.obstacles):
             filename = obstacle_tmp.format(i)
-            P = polytope.qhull(obst)
-            vertices = polytope.extreme(P)
-            print vertices
+            vertices = polytope.extreme(obst)
             ob_vert = np.array(vertices)
             np.savetxt(filename, ob_vert, '%f')
 

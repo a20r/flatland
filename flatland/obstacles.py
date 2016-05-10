@@ -11,11 +11,11 @@ class RandomObstacleGen(object):
     def __init__(self, **kwargs):
         self.bound_low = kwargs.get("bound_low", -10)
         self.bound_high = kwargs.get("bound_high", 10)
-        self.rad_mean = kwargs.get("rad_mean", 0.3)
-        self.rad_std = kwargs.get("rad_std", 0.1)
+        self.rad_mean = kwargs.get("rad_mean", 5)
+        self.rad_std = kwargs.get("rad_std", 0.5)
         self.dim = kwargs.get("dim", 2)
         self.sample_pts_mean = kwargs.get("sample_pts_mean", self.dim + 10)
-        self.sample_pts_std = kwargs.get("sample_pts_std", 1)
+        self.sample_pts_std = kwargs.get("sample_pts_std", 3)
 
     def sample_n_sphere(self, rad, center):
         pt = np.zeros((self.dim,))
@@ -47,6 +47,6 @@ class RandomObstacleGen(object):
             radius = random.gauss(self.rad_mean, self.rad_std)
             pts = self.generate_random_points(n_smpls, radius, center)
             poly = polytope.qhull(pts)
-            print poly
             obs.append(poly)
+        print obs[0]
         return obs
