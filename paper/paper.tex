@@ -1,9 +1,10 @@
 
-\title{Probabilistic Audio Localization in Wireless Acoustic Sensor Networks}
+\title{A Comparison of Dimensionality Reduction Techniques for Robotic Motion
+Planning}
 
 \date{\today}
 
-\author{Alexander Wallar}
+\author{Brandon Araki \and Alex Wallar}
 
 \documentclass[12pt]{article}
 
@@ -88,23 +89,26 @@ their "principle components", or linearly uncorrelated variables.
 
 ncollisions, duration, length, num failed. Run each one 100 times
 
-\cite{wallar2015reactive}
-
 \begin{algorithm}[ht] 
-    \caption{Multiple Source Sound Localization}
+    \caption{$\Function{PRM}^*$~\cite{karaman2011sampling}}
     \label{algo:MS}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
 
-        \STATE $\Function{GetLocations}(\Var{r}, \Var{spl}, \Var{eventList}) \rightarrow$
-        \STATE $\Var{locations} \leftarrow \Function{InitLocationList}()$
-        \FORALL {$e \in \Var{eventList}$}
-        \STATE $\Var{locations}.\Var{add}(\mathcal{L}_m(\Var{r}, \Var{spl}, \Var{eventList}, e.\Var{x}, e.\Var{y}))$
+        \STATE $V \leftarrow \{x_{init}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
+        \STATE $E \leftarrow \emptyset$
+        \FORALL{$v \in V$}
+            \STATE $U \leftarrow \Function{Near}(G = (V, E), v,
+            \gamma \cdot \Function{PRM}(\log(n) / n) ^ {1 / d})
+            \backslash \{v\}$
+            \FORALL{$u \in U$}
+                \IF{$\Function{CollisionFree}(v, u)$}
+                    \STATE $E \leftarrow E \cup \{(v, u), (u, v)\}$
+                \ENDIF
+            \ENDFOR
         \ENDFOR
-        \STATE $\Var{centers} \leftarrow \Function{AffinityPropagation}(\Var{locations})$
-        \COMMENT {\Var{centers} is a list of $(x, y, c)$ points where $c$ is the confidence}
-        \RETURN $\Var{centers}$
+        \RETURN $G = (V, E)$
 
     \end{algorithmic}
 \end{algorithm}
