@@ -46,7 +46,6 @@ class RandomObstacleGen(object):
                                        self.sample_pts_std))
             radius = random.gauss(self.rad_mean, self.rad_std)
             pts = self.generate_random_points(n_smpls, radius, center)
-            poly = polytope.qhull(pts)
+            poly = polytope.qhull(pts, 0.1)
             obs.append(poly)
-        print obs[0]
         return obs

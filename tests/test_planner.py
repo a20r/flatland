@@ -23,5 +23,14 @@ def sanity_check():
     plt.show()
 
 
+def sanity_check_dr():
+    obs = flatland.RandomObstacleGen(dim=6).generate(10)
+    start = np.array([-10, -10, -10, -10, -10, -10])
+    goal = np.array([10, 10, 10, 10, 10, 10])
+    planner = flatland.DRPlanner(
+        high_dim=6, low_dim=4, planner=og.RRTstar, obstacles=obs)
+    print planner.solve(start, goal)
+
+
 if __name__ == "__main__":
-    sanity_check()
+    sanity_check_dr()

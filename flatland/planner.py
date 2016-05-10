@@ -21,7 +21,7 @@ class FLSolution(object):
         return self.planner_def
 
     def get_solution(self):
-        return self.planner_def.getSolutionPath().simplifySolution()
+        return self.planner_def.getSolutionPath()
 
 
 class FLPlanner(object):
