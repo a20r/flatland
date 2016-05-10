@@ -1,0 +1,62 @@
+
+\title{Probabilistic Audio Localization in Wireless Acoustic Sensor Networks}
+
+\date{\today}
+
+\author{Alexander Wallar}
+
+\documentclass[12pt]{article}
+
+\usepackage[pdftex]{graphicx}
+
+\usepackage{amsmath}
+
+\usepackage{relsize}
+
+\usepackage{float}
+
+\usepackage{algorithm}
+
+\usepackage[noend]{algorithmic}
+
+\floatstyle{ruled} \newfloat{program}{thp}{lop} \floatname{program}{Structure}
+
+\newcommand{\Normal}[3]{\mathcal{N}(#1, #2, #3)}
+
+\newcommand{\Acronym}[1]{\ensuremath{{\small{\texttt{#1}}}}}
+\newcommand{\Name}{\Acronym{Camgaze.js}} \newcommand{\False}{\Constant{false}}
+\newcommand{\True}{\Constant{true}}
+\newcommand{\Symbol}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\Function}[1]{\ensuremath{{\small \textsc{#1}}}}
+\newcommand{\Constant}[1]{\ensuremath{\small{\texttt{#1}}}}
+\newcommand{\Var}[1]{\ensuremath{{\small{\textsl{#1}}}}}
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{min}}\;}
+\newcommand{\grad}[1]{\underset{#1}{\operatorname{\Function{GradientDecent}}}\;}
+
+\begin{document}
+
+\maketitle
+
+\begin{algorithm}[ht] 
+    \caption{Multiple Source Sound Localization}
+    \label{algo:MS}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \STATE $\Function{GetLocations}(\Var{r}, \Var{spl}, \Var{eventList}) \rightarrow$
+        \STATE $\Var{locations} \leftarrow \Function{InitLocationList}()$
+        \FORALL {$e \in \Var{eventList}$}
+        \STATE $\Var{locations}.\Var{add}(\mathcal{L}_m(\Var{r}, \Var{spl}, \Var{eventList}, e.\Var{x}, e.\Var{y}))$
+        \ENDFOR
+        \STATE $\Var{centers} \leftarrow \Function{AffinityPropagation}(\Var{locations})$
+        \COMMENT {\Var{centers} is a list of $(x, y, c)$ points where $c$ is the confidence}
+        \RETURN $\Var{centers}$
+
+    \end{algorithmic}
+\end{algorithm}
+
+\bibliographystyle{ieeetran}
+\bibliography{bib}
+
+\end{document}
