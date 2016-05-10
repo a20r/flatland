@@ -11,7 +11,7 @@ from ompl import geometric as og
 
 
 def sanity_check():
-    obs = flatland.RandomObstacleGen(dim=3).generate(30)
+    obs = flatland.RandomObstacleGen(dim=3, rad_mean=7).generate(30)
     start = np.array([-10, -10, -10])
     goal = np.array([10, 10, 10])
     planner = flatland.FLPlanner(

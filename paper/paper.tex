@@ -34,6 +34,15 @@ Planning}
 \newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{min}}\;}
 \newcommand{\grad}[1]{\underset{#1}{\operatorname{\Function{GradientDecent}}}\;}
 
+\newcommand{\xr}[0]{\ensuremath{{x_{\Var{rand}}}}}
+\newcommand{\xnear}[0]{\ensuremath{{x_{\Var{near}}}}}
+\newcommand{\xnearest}[0]{\ensuremath{{x_{\Var{nearest}}}}}
+\newcommand{\xnew}[0]{\ensuremath{{x_{\Var{new}}}}}
+\newcommand{\xmin}[0]{\ensuremath{{x_{\Var{min}}}}}
+\newcommand{\cmin}[0]{\ensuremath{{c_{\Var{min}}}}}
+\newcommand{\cost}[0]{\ensuremath{{\Function{Cost}}}}
+\newcommand{\linef}[1]{\ensuremath{{c(\Function{Line}(#1))}}}
+
 \begin{document}
 
 \maketitle
@@ -85,7 +94,7 @@ We used FeatureAgglomeration, TruncatedSVD, PCA, KernelPCA, RandomizedPCA, and
 our own "Trained Johnson-Lindestrauss" to perform dimensionality reduction.
 
 PCA: Principle Component Analysis, or PCA, transforms a set of variables in
-their "principle components", or linearly uncorrelated variables.
+their "principle components", or linearly uncorrelated variables.\
 
 ncollisions, duration, length, num failed. Run each one 100 times
 
@@ -96,7 +105,7 @@ ncollisions, duration, length, num failed. Run each one 100 times
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
 
-        \STATE $V \leftarrow \{x_{init}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
+        \STATE $V \leftarrow \{x_{\Var{init}}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
         \STATE $E \leftarrow \emptyset$
         \FORALL{$v \in V$}
             \STATE $U \leftarrow \Function{Near}(G = (V, E), v,
@@ -112,6 +121,42 @@ ncollisions, duration, length, num failed. Run each one 100 times
 
     \end{algorithmic}
 \end{algorithm}
+
+\begin{algorithm}[ht] 
+    \caption{$\Function{RRT}^*$~\cite{karaman2011sampling}}
+    \label{algo:MS}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \STATE $V \leftarrow \{x_{\Var{init}}\}$
+        \STATE $E \leftarrow \emptyset$
+        \FOR{$i = 1 \ \TO \ n$}
+            \STATE $\xr \leftarrow \Var{SampleFree}_i$
+            \STATE $\xnearest \leftarrow \Function{Nearest}(G = (V, E), \xr)$
+            \STATE $\xnew \leftarrow \Function{Steer}(\xnearest, \xr)$
+            \IF{$\Function{ObstacleFree}(\xnearest, \xnew)$}
+                \STATE $\xnear \leftarrow \Function{Near}(G = (V, E), \xnew,
+                \min \{\gamma \cdot \Function{RRT}(\log(|V|) / |V|)^{1 / d}, \eta\})$
+                \STATE $V \leftarrow V \cup \{\xnew\}$
+                \STATE $\xmin \leftarrow \xnearest$
+                \STATE $\cmin \leftarrow \Function{Cost}(\xnear) +
+                c(\Function{Line}(\xnearest, \xnew))$
+                \FORALL{$\xnear \in X_{\Var{near}}$}
+                    \STATE $C \leftarrow \cost(\xnear) + \linef{\xnear, \xnew}$
+                    \IF{$\Function{CollisionFree}(\xnear, \xnew) \wedge C < \cmin$}
+                        \STATE $\xmin \leftarrow \xnear$
+                        \STATE $\cmin \leftarrow C$
+                    \ENDIF
+                    \STATE $E \leftarrow E \cup \{(\xmin, \xnew)\}$
+                \ENDFOR
+            \ENDIF
+        \ENDFOR
+        \RETURN $G = (V, E)$
+
+    \end{algorithmic}
+\end{algorithm}
+
 
 \bibliographystyle{plain}
 \bibliography{bib}

@@ -34,6 +34,7 @@ n_runs = 100
 high_dim = 6
 low_dim = 4
 timeout = 1.5
+rad_mean = 7
 
 
 def run_experiments(filename):
