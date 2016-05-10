@@ -4,6 +4,7 @@ from ompl import base as ob
 from ompl import geometric as og
 import os
 import numpy as np
+import polytope
 
 
 class FLSolution(object):
@@ -14,7 +15,7 @@ class FLSolution(object):
     def write_to_file(self, filename):
         path = self.planner_def.getSolutionPath()
         with open(filename, "w") as f:
-            f.write(path.printAsMatrix())
+            f.write(path.printAsMatrix()
         return self
 
     def get_planner_def(self):
