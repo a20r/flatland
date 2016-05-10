@@ -11,13 +11,13 @@ from ompl import geometric as og
 
 
 def sanity_check():
-    obs = flatland.RandomObstacleGen(dim=3).generate(10)
+    obs = flatland.RandomObstacleGen(dim=3).generate(30)
     start = np.array([-10, -10, -10])
     goal = np.array([10, 10, 10])
     planner = flatland.FLPlanner(
-        dim=3, planner=og.RRTstar, obstacles=obs)
+        dim=3, planner=og.PRMstar, obstacles=obs)
     planner.save_obstacles()
-    res = planner.solve(start, goal, 2)
+    res = planner.solve(start, goal, 1)
     res.write_to_file("sandbox/prmpath.txt")
     flatland.make_path_plot_3d()
     plt.show()
@@ -33,4 +33,4 @@ def sanity_check_dr():
 
 
 if __name__ == "__main__":
-    sanity_check_dr()
+    sanity_check()

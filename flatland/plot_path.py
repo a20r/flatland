@@ -76,14 +76,14 @@ def make_path_plot_3d():
     start = txt[0,0:2]
     goal = txt[-1,0:2]
 
-    startCircle = Circle(start,0.3,color='g',zorder=2)
-    goalCircle = Circle(goal,0.3,color='r',zorder=2)
+    startCircle = Circle(start,0.3,color='g')
+    goalCircle = Circle(goal,0.3,color='r')
     ax.add_patch(startCircle)
     ax.add_patch(goalCircle)
     art3d.pathpatch_2d_to_3d(startCircle,z=txt[0,2],zdir='z')
     art3d.pathpatch_2d_to_3d(goalCircle,z=txt[-1,2],zdir='z')
 
-    plt.plot(txt[:, 0], txt[:, 1], txt[:,2], 'bo-', zorder=1)
+    plt.plot(txt[:, 0], txt[:, 1], txt[:,2], 'bo-')
 
 if __name__ == "__main__":
     make_path_plot_2d()

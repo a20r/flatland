@@ -4,6 +4,7 @@ import random
 import numpy as np
 import math
 import polytope
+import scipy.spatial as spatial
 
 
 class RandomObstacleGen(object):
@@ -46,6 +47,9 @@ class RandomObstacleGen(object):
                                        self.sample_pts_std))
             radius = random.gauss(self.rad_mean, self.rad_std)
             pts = self.generate_random_points(n_smpls, radius, center)
-            poly = polytope.qhull(pts, 0.1)
-            obs.append(poly)
+            ch = spatial.ConvexHull(pts)
+            eqs = ch.equations
+            poly = polytope.Polytope(
+                eqs[:, : - 1], -eqs[:, -1])
+            obs.append((poly, ch.points))
         return obs

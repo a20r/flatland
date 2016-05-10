@@ -5,6 +5,7 @@ import polytope
 import sklearn.cluster as cluster
 import sklearn.decomposition as decomp
 import time
+import scipy.spatial as spatial
 from ompl import geometric as og
 
 
@@ -21,9 +22,8 @@ class DRPlanner(object):
 
     def fit(self, st, gl):
         X = [st, gl]
-        for obst in self.obstacles:
-            vs = polytope.extreme(obst)
-            X.append(vs)
+        for obst, verts in self.obstacles:
+            X.append(verts)
         X = np.vstack(X)
         try:
             return self.trans(n_clusters=self.low_dim).fit(X)
@@ -32,10 +32,13 @@ class DRPlanner(object):
 
     def low_dim_obstacles(self, tr):
         ld_obsts = list()
-        for obst in self.obstacles:
-            verts = polytope.extreme(obst)
+        for obst, verts in self.obstacles:
             ld_verts = tr.transform(verts)
-            ld_obsts.append(polytope.qhull(ld_verts, 0.1))
+            ch = spatial.ConvexHull(ld_verts)
+            eqs = ch.equations
+            poly = polytope.Polytope(
+                A=eqs[:, : - 1], b=eqs[:, -1], minrep=True)
+            ld_obsts.append((poly, ch.points))
         return ld_obsts
 
     def path_to_arr(self, path):
@@ -48,16 +51,24 @@ class DRPlanner(object):
         return arr
 
     def is_state_valid(self, state):
-        for obst in self.obstacles:
+        for obst, verts in self.obstacles:
             if state in obst:
                 return False
         return True
 
+    def crow_flies(self, start, end, step):
+        dr = (end - start) / np.linalg.norm(end - start)
+        cur = start
+        while np.linalg.norm(cur - end) > step:
+            cur += step * dr
+            yield cur
+
     def check_path(self, path):
         collision_count = 0
-        for i in xrange(path.shape[0]):
-            if not self.is_state_valid(path[i]):
-                collision_count += 1
+        for i in xrange(path.shape[0] - 1):
+            for pt in self.crow_flies(path[i], path[i + 1], 0.2):
+                if not self.is_state_valid(pt):
+                    collision_count += 1
         return collision_count
 
     def solve(self, st, gl, timeout=1.0):
