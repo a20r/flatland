@@ -80,6 +80,8 @@ We used RRT* and PRM* in our project. The * indicates that these are the
 asymptotically optimal versions of RRT and PRM (they are guaranteed to find the
 optimal path as time goes to infinity). [Description of how RRT* and PRM* work]
 
+The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a graph search over the roadmap is made to connect initial and goal configurations.The map is constructed during the preprocessing phase by sampling random points in the C-space and then adding them to the nearest existing vertices in the roadmap. in 
+
 Despite the efficiency of sampling-based search, the high dimensionality of the
 configuration space of complex robots means that motion planning for many
 robots is slow or infeasible. This is because of the "curse of dimensionality",
