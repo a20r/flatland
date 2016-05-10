@@ -3,6 +3,7 @@ from ompl import base as ob
 from ompl import geometric as og
 import os
 import numpy as np
+import polytope
 
 
 class FLSolution(object):
@@ -31,7 +32,6 @@ class FLPlanner(object):
         self.obstacles = kwargs.get("obstacles", list())
         self.low_bound = kwargs.get("low_bound", -10)
         self.high_bound = kwargs.get("high_bound", 10)
-        # self.save_obstacles()
 
     def save_obstacles(self):
         obstacleFolder = 'sandbox/obstacles/'
@@ -41,7 +41,11 @@ class FLPlanner(object):
             os.remove(obstaclePath)
         for i, obst in enumerate(self.obstacles):
             filename = obstacle_tmp.format(i)
-            np.savetxt(filename, obst, '%f')
+            P = polytope.qhull(obst)
+            vertices = polytope.extreme(P)
+            print vertices
+            ob_vert = np.array(vertices)
+            np.savetxt(filename, ob_vert, '%f')
 
     def is_state_valid(self, state):
         arr = self.state_to_arr(state)
