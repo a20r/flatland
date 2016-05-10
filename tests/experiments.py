@@ -24,11 +24,14 @@ transformer_strs = ["FeatureAgglomeration", "TruncatedSVD",
                     "PCA", "KernelPCA", "RandomizedPCA"]
 
 field_names = ["planner", "transformer", "n_collisions",
-               "planning_duration", "path_length"]
+               "planning_duration", "path_length",
+               "n_collisions_std", "planning_duration_std", "path_length_std",
+               "num_failed"]
 n_obs = 10
 n_runs = 100
 high_dim = 6
 low_dim = 4
+timeout = 1.5
 
 
 def run_experiments(filename):
@@ -52,11 +55,14 @@ def run_experiments(filename):
                     planner = flatland.DRPlanner(
                         high_dim=high_dim, low_dim=low_dim,
                         planner=og.RRTstar, obstacles=obs)
-                    path, dur = planner.solve(start, goal)
-                    data["n_collisions"].append(
-                        planner.check_path(path))
-                    data["planning_duration"].append(dur)
-                    data["path_length"].append(path.shape[0])
+                    try:
+                        path, dur = planner.solve(start, goal, timeout)
+                        data["n_collisions"].append(
+                            planner.check_path(path))
+                        data["planning_duration"].append(dur)
+                        data["path_length"].append(path.shape[0])
+                    except ValueError:
+                        data["num_failed"].append(1)
                     pbar.update(counter)
                     counter += 1
                 row["transformer"] = transformer_strs[i]
@@ -64,6 +70,11 @@ def run_experiments(filename):
                 row["n_collisions"] = np.mean(data["n_collisions"])
                 row["planning_duration"] = np.mean(data["planning_duration"])
                 row["path_length"] = np.mean(data["path_length"])
+                row["n_collisions_std"] = np.std(data["n_collisions"])
+                row["planning_duration_std"] = np.std(
+                    data["planning_duration"])
+                row["path_length_std"] = np.std(data["path_length"])
+                row["num_failed"] = np.sum(data["num_failed"])
                 writer.writerow(row)
 
 
