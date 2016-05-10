@@ -3,6 +3,8 @@ import planner
 import numpy as np
 import polytope
 import sklearn.cluster as cluster
+import sklearn.decomposition as decomp
+import time
 from ompl import geometric as og
 
 
@@ -23,7 +25,10 @@ class DRPlanner(object):
             vs = polytope.extreme(obst)
             X.append(vs)
         X = np.vstack(X)
-        return self.trans(n_clusters=self.low_dim).fit(X)
+        try:
+            return self.trans(n_clusters=self.low_dim).fit(X)
+        except TypeError:
+            return self.trans(n_components=self.low_dim).fit(X)
 
     def low_dim_obstacles(self, tr):
         ld_obsts = list()
@@ -42,6 +47,19 @@ class DRPlanner(object):
                 arr[i][j] = s[j]
         return arr
 
+    def is_state_valid(self, state):
+        for obst in self.obstacles:
+            if state in obst:
+                return False
+        return True
+
+    def check_path(self, path):
+        collision_count = 0
+        for i in xrange(path.shape[0]):
+            if not self.is_state_valid(path[i]):
+                collision_count += 1
+        return collision_count
+
     def solve(self, st, gl, timeout=1.0):
         tr = self.fit(st, gl)
         ld_obsts = self.low_dim_obstacles(tr)
@@ -52,6 +70,8 @@ class DRPlanner(object):
             obstacles=ld_obsts,
             low_bound=self.low_bound,
             high_bound=self.high_bound)
-        ld_path = flpl.solve(ld_st_gl[0], ld_st_gl[1]).get_solution()
+        start = time.time()
+        ld_path = flpl.solve(ld_st_gl[0], ld_st_gl[1], timeout).get_solution()
+        end = time.time()
         hd_path = self.path_to_arr(ld_path)
-        return tr.inverse_transform(hd_path)
+        return tr.inverse_transform(hd_path), end - start
