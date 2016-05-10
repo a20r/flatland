@@ -7,6 +7,8 @@ Motion planning essentially consists of a search over the configuration space fr
 
 We used RRT* and PRM* in our project. The * indicates that these are the asymptotically optimal versions of RRT and PRM (they are guaranteed to find the optimal path as time goes to infinity). [Description of how RRT* and PRM* work]
 
+The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a search over the roadmap is made to connect initial and goal configurations. During the map is constructed during the preprocessing phase by 
+
 Despite the efficiency of sampling-based search, the high dimensionality of the configuration space of complex robots means that motion planning for many robots is slow or infeasible. This is because of the "curse of dimensionality", in which the size of the search space increases exponentially with the dimension. One way to speed up motion planning is to reduce the dimensionality of the C-space and do search in this reduced dimensionality space. For this project, we tested the performance of a number of dimensionality reduction techniques to see which one was the most effective in speeding up motion planning while providing reliable obstacle avoidance.
 
 We used FeatureAgglomeration, TruncatedSVD, PCA, KernelPCA, RandomizedPCA, and our own "Trained Johnson-Lindestrauss" to perform dimensionality reduction.
