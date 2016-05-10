@@ -1,5 +1,4 @@
 
-from matplotlib.path import Path
 from ompl import base as ob
 from ompl import geometric as og
 import os
@@ -32,7 +31,7 @@ class FLPlanner(object):
         self.obstacles = kwargs.get("obstacles", list())
         self.low_bound = kwargs.get("low_bound", -10)
         self.high_bound = kwargs.get("high_bound", 10)
-        self.save_obstacles()
+        # self.save_obstacles()
 
     def save_obstacles(self):
         obstacleFolder = 'sandbox/obstacles/'
@@ -45,17 +44,22 @@ class FLPlanner(object):
             np.savetxt(filename, obst, '%f')
 
     def is_state_valid(self, state):
-        for i in xrange(self.dim / 2):
-            for obst in self.obstacles:
-                poly = Path(obst)
-                if poly.contains_point((state[2 * i], state[2 * i + 1])):
-                    return False
+        arr = self.state_to_arr(state)
+        for obst in self.obstacles:
+            if arr in obst:
+                return False
         return True
 
     def set_state(self, state, arr):
         for i in xrange(self.dim):
             state()[i] = arr[i]
         return self
+
+    def state_to_arr(self, state):
+        arr = np.zeros((self.dim,))
+        for i in xrange(self.dim):
+            arr[i] = state[i]
+        return arr
 
     def solve(self, st, gl, timeout=1.0):
         space = ob.RealVectorStateSpace(self.dim)

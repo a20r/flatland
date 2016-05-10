@@ -2,60 +2,51 @@
 import planar
 import random
 import numpy as np
-
-
-DIM = 2
+import math
+import polytope
 
 
 class RandomObstacleGen(object):
 
     def __init__(self, **kwargs):
-        self.low = kwargs.get("low", -10)
-        self.high = kwargs.get("high", 10)
-        self.vlow = kwargs.get("vlow", 3)
-        self.vhigh = kwargs.get("vhigh", 10)
-        self.radlow = kwargs.get("radlow", 0.3)
-        self.radhigh = kwargs.get("radhigh", 0.8)
+        self.bound_low = kwargs.get("bound_low", -10)
+        self.bound_high = kwargs.get("bound_high", 10)
+        self.rad_mean = kwargs.get("rad_mean", 0.3)
+        self.rad_std = kwargs.get("rad_std", 0.1)
+        self.dim = kwargs.get("dim", 2)
+        self.sample_pts_mean = kwargs.get("sample_pts_mean", self.dim + 10)
+        self.sample_pts_std = kwargs.get("sample_pts_std", 1)
 
-    def set_low(self, low):
-        self.low = low
-        return self
+    def sample_n_sphere(self, rad, center):
+        pt = np.zeros((self.dim,))
+        angles = np.random.uniform(0, 2 * math.pi, [self.dim - 1])
+        sin_angles = np.sin(angles)
+        cos_angles = np.cos(angles)
+        for i in xrange(0, self.dim - 1):
+            sin_prod = 1
+            for j in xrange(i):
+                sin_prod *= sin_angles[j]
+            pt[i] = center[i] + rad * cos_angles[i] * sin_prod
+            if i == self.dim - 2:
+                pt[i + 1] = center[i + 1] + rad * sin_prod * sin_angles[i]
+        return pt
 
-    def set_high(self, high):
-        self.high = high
-        return self
-
-    def set_vertex_low(self, vlow):
-        self.vlow = vlow
-        return self
-
-    def set_vertex_high(self, vhigh):
-        self.vhigh = vhigh
-        return self
-
-    def set_radius_low(self, radlow):
-        self.radlow = radlow
-        return self
-
-    def set_radius_high(self, radhigh):
-        self.radhigh = radhigh
-        return self
-
-    def polygon_as_arr(self, poly):
-        arr = np.zeros((len(poly), 2))
-        for i, v in enumerate(poly):
-            arr[i][0] = v.x
-            arr[i][1] = v.y
-        return arr
+    def generate_random_points(self, num, rad, center):
+        pts = np.zeros((num, self.dim))
+        for i in xrange(num):
+            pts[i] = self.sample_n_sphere(rad, center)
+        return pts
 
     def generate(self, num):
         obs = list()
         for i in xrange(num):
-            x = random.uniform(self.low, self.high)
-            y = random.uniform(self.low, self.high)
-            vcount = random.randint(self.vlow, self.vhigh)
-            radius = random.uniform(self.radlow, self.radhigh)
-            center = planar.Vec2(x, y)
-            ob = planar.Polygon.regular(vcount, radius, center=center)
-            obs.append(self.polygon_as_arr(ob))
+            center = np.random.uniform(
+                self.bound_low, self.bound_high, [self.dim])
+            n_smpls = int(random.gauss(self.sample_pts_mean,
+                                       self.sample_pts_std))
+            radius = random.gauss(self.rad_mean, self.rad_std)
+            pts = self.generate_random_points(n_smpls, radius, center)
+            poly = polytope.qhull(pts)
+            print poly
+            obs.append(poly)
         return obs
