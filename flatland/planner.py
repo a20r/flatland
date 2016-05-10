@@ -1,6 +1,7 @@
 
 from ompl import base as ob
 from ompl import geometric as og
+import matplotlib.pyplot as plt
 import os
 import numpy as np
 import polytope
@@ -39,15 +40,14 @@ class FLPlanner(object):
         for i in os.listdir(obstacleFolder):
             obstaclePath = obstacleFolder + i
             os.remove(obstaclePath)
-        for i, obst in enumerate(self.obstacles):
+        for i, (obst, vertices) in enumerate(self.obstacles):
             filename = obstacle_tmp.format(i)
-            vertices = polytope.extreme(obst)
             ob_vert = np.array(vertices)
             np.savetxt(filename, ob_vert, '%f')
 
     def is_state_valid(self, state):
         arr = self.state_to_arr(state)
-        for obst in self.obstacles:
+        for obst, _ in self.obstacles:
             if arr in obst:
                 return False
         return True
