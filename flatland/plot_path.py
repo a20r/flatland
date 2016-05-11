@@ -7,6 +7,7 @@ import mpl_toolkits.mplot3d.art3d as art3d
 import matplotlib.patches as patches
 from matplotlib.patches import Circle
 from scipy.spatial import Delaunay
+from scipy.spatial import ConvexHull
 import matplotlib.cm as cm
 import os
 import pdb
@@ -31,24 +32,31 @@ def make_path_plot_2d():
     for i in os.listdir(obstacleFolder):
         obstaclePath = obstacleFolder + i
 
-        ob = np.loadtxt(obstaclePath)
-        ob = np.vstack((ob, ob[0, :]))
-        CH = Delaunay(ob).convex_hull
-        x,y = ob[:,0],ob[:,1]
-        z = np.zeros_like(x)
+        #ob = np.loadtxt(obstaclePath)
+        #ob = np.vstack((ob, ob[0, :]))
+        #CH = Delaunay(ob).convex_hull
+        #x,y = ob[:,0],ob[:,1]
+        #z = np.zeros_like(x)
 
         #ax = fig1.gca(projection='3d')
-        #S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
+        #S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.autumn,lw=0.2)
 
-        path = Path(ob)
+        ob = np.loadtxt(obstaclePath)
+        ob = np.vstack((ob, ob[0, :]))
+        hull = ConvexHull(ob)
+        newHull = []
+        for p in hull.vertices:
+            newHull.append(ob[p])
+        newHull.append(ob[hull.vertices[0]])
+        path = Path(newHull)
         patch = patches.PathPatch(path, facecolor='orange', lw=2)
-        ax = fig1.gca(projection='3d')
+        ax = plt.gca()
         ax.add_patch(patch)
-        art3d.pathpatch_2d_to_3d(patch,z=0,zdir='z')
+
 
     txt = np.loadtxt(rrtPath)
-    start = txt[0,0:1]
-    goal = txt[-1,0:1]
+    start = txt[0,0:2]
+    goal = txt[-1,0:2]
 
     #startCircle = plt.Circle(start,0.3,color='g', zorder=2)
     #goalCircle = plt.Circle(goal,0.3,color='r', zorder=2)
@@ -58,8 +66,8 @@ def make_path_plot_2d():
     goalCircle = Circle(goal,0.3,color='r',zorder=2)
     ax.add_patch(startCircle)
     ax.add_patch(goalCircle)
-    art3d.pathpatch_2d_to_3d(startCircle,z=0,zdir='z')
-    art3d.pathpatch_2d_to_3d(goalCircle,z=0,zdir='z')
+    #art3d.pathpatch_2d_to_3d(startCircle,z=0,zdir='z')
+    #art3d.pathpatch_2d_to_3d(goalCircle,z=0,zdir='z')
 
     plt.plot(txt[:, 0], txt[:, 1], 'bo-', zorder=1)
 
