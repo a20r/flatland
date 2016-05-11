@@ -129,13 +129,11 @@ x_{n-1} &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \cos(\phi_{n-1}) \\
 x_n &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \sin(\phi_{n-1}) \,.
 \end{align}
 
-We then run Feature Agglomeration, Truncated SVD, PCA, Kernel PCA, and Randomized PCA to reduce the dimensionality of the space. We then run PRM* on each of these reduced dimensionality spaces, as well as on the full-dimensionality space as a control. We then run an inverse transform on the paths that we find to return them to the full-dimensionality space. Then 
-
-ncollisions, duration, length, num failed. Run each one 100 times
+We then run Feature Agglomeration, Truncated SVD, PCA, Kernel PCA, and Randomized PCA to reduce the dimensionality of the space. We then run PRM* on each of these reduced dimensionality spaces, as well as on the full-dimensionality space as a control. We then run an inverse transform on the paths that we find to return them to the full-dimensionality space. Then we do collision checking and check the number of collisions the path makes with the obstacles.
 
 \begin{algorithm}[ht] 
     \caption{$\Function{Dimensionality Reduction}$}
-    \label{algo:MS}
+    \label{algo:DR}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
@@ -150,6 +148,9 @@ ncollisions, duration, length, num failed. Run each one 100 times
     \end{algorithmic}
 \end{algorithm}
 
+Results:
+
+The results are listed in Figure WHAT. They show that 
 
 \begin{algorithm}[ht] 
     \caption{$\Function{PRM}^*$~\cite{karaman2011sampling}}

@@ -37,8 +37,8 @@ def make_path_plot_2d():
         x,y = ob[:,0],ob[:,1]
         z = np.zeros_like(x)
 
-        ax = fig1.gca(projection='3d')
-        S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
+        #ax = fig1.gca(projection='3d')
+        #S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
 
         path = Path(ob)
         patch = patches.PathPatch(path, facecolor='orange', lw=2)
