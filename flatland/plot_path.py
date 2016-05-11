@@ -33,8 +33,9 @@ def make_path_plot_2d():
 
         ob = np.loadtxt(obstaclePath)
         ob = np.vstack((ob, ob[0, :]))
-        #CH = Delaunay(ob).convex_hull
-        #x,y,z = ob[:,0],ob[:,1]
+        CH = Delaunay(ob).convex_hull
+        x,y = ob[:,0],ob[:,1]
+        z = np.zeros_like(x)
 
         #ax = fig1.gca(projection='3d')
         #S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
