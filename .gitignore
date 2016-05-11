@@ -90,8 +90,8 @@ ENV/
 .ropeproject
 
 sandbox/rrtpath.txt
-sandbox/prmpath.txt
-sandbox/obstacles/
+# sandbox/prmpath.txt
+# sandbox/obstacles/
 paper/paper.aux
 paper/paper.pdf
 paper/paper.blg
