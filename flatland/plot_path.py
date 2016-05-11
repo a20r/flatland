@@ -36,8 +36,8 @@ def make_path_plot_2d():
         #CH = Delaunay(ob).convex_hull
         #x,y,z = ob[:,0],ob[:,1]
 
-        ax = fig1.gca(projection='3d')
-        S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
+        #ax = fig1.gca(projection='3d')
+        #S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
 
         path = Path(ob)
         patch = patches.PathPatch(path, facecolor='orange', lw=2)
