@@ -62,14 +62,14 @@ def make_path_plot_2d():
     #goalCircle = plt.Circle(goal,0.3,color='r', zorder=2)
     #fig1.gca().add_artist(startCircle)
     #fig1.gca().add_artist(goalCircle)
-    startCircle = Circle(start,0.3,color='g',zorder=2)
-    goalCircle = Circle(goal,0.3,color='r',zorder=2)
+    startCircle = Circle(start,1,color='g',zorder=2)
+    goalCircle = Circle(goal,1,color='r',zorder=2)
     ax.add_patch(startCircle)
     ax.add_patch(goalCircle)
     #art3d.pathpatch_2d_to_3d(startCircle,z=0,zdir='z')
     #art3d.pathpatch_2d_to_3d(goalCircle,z=0,zdir='z')
 
-    plt.plot(txt[:, 0], txt[:, 1], 'bo-', zorder=1)
+    plt.plot(txt[:, 0], txt[:, 1], 'bo-', markersize=10, linewidth=3, zorder=1)
 
 def make_path_plot_3d():
     fig1 = plt.figure()
