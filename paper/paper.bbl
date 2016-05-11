@@ -6,4 +6,9 @@ Sertac Karaman and Emilio Frazzoli.
 \newblock {\em The International Journal of Robotics Research}, 30(7):846--894,
   2011.
 
+\bibitem{lavalle2006planning}
+Steven~M LaValle.
+\newblock {\em Planning algorithms}.
+\newblock Cambridge university press, 2006.
+
 \end{thebibliography}
