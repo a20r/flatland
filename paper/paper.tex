@@ -48,7 +48,7 @@ SE(3) is homeomorphic to the topological space R3xRP3 (where RP3 is the
 multi-link robot with an arbitrarily complex state space. The picture is
 further complicated by the addition of obstacles into a robot's world. The
 state space for motion planning, which must take into account both the robot
-and obstacles, is called the configuration space. 
+and obstacles, is called the configuration space \cite{lavalle2006planning}. 
 
 Motion planning essentially consists of a search over the configuration space
 from a start configuration to a goal configuration. A huge number of methods
@@ -64,14 +64,13 @@ sampling-based motion planning techniques such as the Rapidly-exploring Random
 Tree (RRT) and Probabilistic RoadMap (PRM) planning are the most popular motion
 planning techniques.
 
-[RRT* algorithm]
-[PRM* algorithm]
-
 We used RRT* and PRM* in our project. The * indicates that these are the
 asymptotically optimal versions of RRT and PRM (they are guaranteed to find the
-optimal path as time goes to infinity). [Description of how RRT* and PRM* work]
+optimal path as time goes to infinity).
 
-The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a graph search over the roadmap is made to connect initial and goal configurations.The map is constructed during the preprocessing phase by sampling random points in the C-space and then adding them to the nearest existing vertices in the roadmap. in 
+The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a graph search over the roadmap is made to connect initial and goal configurations.The map is constructed during the preprocessing phase by sampling random points in the C-space and then adding them to the vertices in the roadmap within a certain radius of the point. PRM can be elevated to the asymptotically optimal PRM* by defining the radius to be a function of the number of vertices and the dimensionality of the space.
+
+The Rapidly-expanding Random Tree algorithm works by building up a tree from the initial configuration to the goal configuration. Starting at the initial configuration as the root, it incrementally attempts to add randomly selected samples to the tree until it reaches the goal configuration. RRT* differs from RRT in that whenever a new node is added to the tree, connections are also tested to the new node from every other node that is within a certain radius from the new node. The the tree is pruned so that edges that are not part of the shortest path from the root of the tree to the new node are removed. 
 
 Despite the efficiency of sampling-based search, the high dimensionality of the
 configuration space of complex robots means that motion planning for many
