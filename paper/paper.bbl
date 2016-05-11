@@ -1,0 +1,14 @@
+\begin{thebibliography}{1}
+
+\bibitem{karaman2011sampling}
+Sertac Karaman and Emilio Frazzoli.
+\newblock Sampling-based algorithms for optimal motion planning.
+\newblock {\em The International Journal of Robotics Research}, 30(7):846--894,
+  2011.
+
+\bibitem{lavalle2006planning}
+Steven~M LaValle.
+\newblock {\em Planning algorithms}.
+\newblock Cambridge university press, 2006.
+
+\end{thebibliography}

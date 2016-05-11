@@ -33,17 +33,21 @@ def make_path_plot_2d():
 
         ob = np.loadtxt(obstaclePath)
         ob = np.vstack((ob, ob[0, :]))
+        #CH = Delaunay(ob).convex_hull
+        #x,y,z = ob[:,0],ob[:,1]
+
+        ax = fig1.gca(projection='3d')
+        S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
+
         path = Path(ob)
-        #ax = Axes3D(fig1)
-        #ax.add_collection3d(Poly3DCollection(ob))
         patch = patches.PathPatch(path, facecolor='orange', lw=2)
         ax = fig1.gca(projection='3d')
         ax.add_patch(patch)
         art3d.pathpatch_2d_to_3d(patch,z=0,zdir='z')
 
     txt = np.loadtxt(rrtPath)
-    start = txt[0,:]
-    goal = txt[-1,:]
+    start = txt[0,0:1]
+    goal = txt[-1,0:1]
 
     #startCircle = plt.Circle(start,0.3,color='g', zorder=2)
     #goalCircle = plt.Circle(goal,0.3,color='r', zorder=2)
