@@ -93,7 +93,7 @@ techniques to see which one was the most effective in speeding up motion
 planning while providing reliable obstacle avoidance.
 
 We used Feature Agglomeration, Truncated SVD, PCA, Kernel PCA, Randomized PCA, and
-our own "Trained Johnson-Lindestrauss" to perform dimensionality reduction. We will briefly summarize each of these techniques.
+our own "Trained Johnson-Lindenstrauss" to perform dimensionality reduction. We will briefly summarize each of these techniques.
 
 PCA: Principle Component Analysis, or PCA, transforms a set of variables into 
 their "principle components", or linearly uncorrelated variables. In other words, the axes of the dataset in question are reoriented so the Rayleigh quotient, which is related to the covariance of the dataset, along the first axis is maximized. After the first axis has been set, the second axis is then set to maximize the Rayleigh quotient of the dataset along that axis, and so on, so that the first axis has the highest Rayleigh quotient, the second axis has the second highest, and so on. Dimensionality reduction is then performed by chopping off the axes with the lowest Rayleigh quotients (which corresponded to axes with the lowest variance). \
@@ -104,7 +104,13 @@ Randomized PCA: In Randomized PCA, computations are sped up by only approximatin
 
 Feature Agglomeration: Feature Agglomeration groups together similar features to reduce the number of features. It does this by using agglomerative clustering, in which every data point starts as a cluster, and clusters are merged together.
 
-Truncated SVD: 
+Truncated SVD: Truncated SVD works best with sparse matrices.
+
+Trained Johnson-Lindenstrauss: Normal Johnson-Lindenstrauss uses a random mxn Gaussian matrix to reduce the dimensionality of a vector from n to m. Instead of using a random matrix, we train a matrix on randomly-generated obstacles in n-space to minimize [MINIMIZE WHAT?]
+
+Methods:
+
+
 
 ncollisions, duration, length, num failed. Run each one 100 times
 
