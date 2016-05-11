@@ -10,6 +10,7 @@ Planning}
 
 \usepackage[pdftex]{graphicx}
 \graphicspath{ {figs/} }
+\usepackage{subcaption}
 
 \usepackage{amsmath}
 
@@ -56,16 +57,16 @@ of DoF. The rotational and translational transformations of a rigid body can be
 described with the 3-dimensional Special Euclidean group (known as SE(3)).
 SE(3) is homeomorphic to the topological space R3xRP3 (where RP3 is the
 3-dimensional real projective plane). Therefore it is easy to imagine a
-multi-link robot with an arbitrarily complex state space. The picture is
+multi-link robot with an arbitrarily complex state space \cite{transeth2008snakerobot}. The picture is
 further complicated by the addition of obstacles into a robot's world. The
 state space for motion planning, which must take into account both the robot
-and obstacles, is called the configuration space \cite{lavalle2006planning}. 
+and obstacles, is called the configuration space \cite{lozano1983spatial}. 
 
 Motion planning essentially consists of a search over the configuration space
 from a start configuration to a goal configuration. A huge number of methods
 for searching through the configuration space have been developed, most of
 which can be divided into two classes, sampling-based motion planning and
-combinatorial motion planning. In sampling-based motion planning, obstacles in
+combinatorial motion planning \cite{lavalle2006planning}. In sampling-based motion planning, obstacles in
 the C-space are defined implicitly so that the path is constructed by randomly
 or pseudorandomly sampling points from the C-space and doing collision
 checking. In combinatorial motion planning, obstacles are defined explicitly
@@ -79,9 +80,9 @@ We used RRT* and PRM* in our project. The * indicates that these are the
 asymptotically optimal versions of RRT and PRM (they are guaranteed to find the
 optimal path as time goes to infinity).
 
-The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a graph search over the roadmap is made to connect initial and goal configurations.The map is constructed during the preprocessing phase by sampling random points in the C-space and then adding them to the vertices in the roadmap within a certain radius of the point. PRM can be elevated to the asymptotically optimal PRM* by defining the radius to be a function of the number of vertices and the dimensionality of the space.
+The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a graph search over the roadmap is made to connect initial and goal configurations \cite{kavraki1996prm}. The map is constructed during the preprocessing phase by sampling random points in the C-space and then adding them to the vertices in the roadmap within a certain radius of the point. PRM can be elevated to the asymptotically optimal PRM* by defining the radius to be a function of the number of vertices and the dimensionality of the space \cite{karaman2011sampling}.
 
-The Rapidly-expanding Random Tree algorithm works by building up a tree from the initial configuration to the goal configuration. Starting at the initial configuration as the root, it incrementally attempts to add randomly selected samples to the tree until it reaches the goal configuration. RRT* differs from RRT in that whenever a new node is added to the tree, connections are also tested to the new node from every other node that is within a certain radius from the new node. The the tree is pruned so that edges that are not part of the shortest path from the root of the tree to the new node are removed. 
+The Rapidly-expanding Random Tree algorithm works by building up a tree from the initial configuration to the goal configuration \cite{lavalle1998rrt}. Starting at the initial configuration as the root, it incrementally attempts to add randomly selected samples to the tree until it reaches the goal configuration. RRT* differs from RRT in that whenever a new node is added to the tree, connections are also tested to the new node from every other node that is within a certain radius from the new node \cite{karaman2011sampling}. The the tree is pruned so that edges that are not part of the shortest path from the root of the tree to the new node are removed. 
 
 Despite the efficiency of sampling-based search, the high dimensionality of the
 configuration space of complex robots means that motion planning for many
@@ -132,6 +133,32 @@ x_n &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \sin(\phi_{n-1}) \,.
 
 We then run Feature Agglomeration, Truncated SVD, PCA, Kernel PCA, and Randomized PCA to reduce the dimensionality of the space. We then run PRM* on each of these reduced dimensionality spaces, as well as on the full-dimensionality space as a control. We then run an inverse transform on the paths that we find to return them to the full-dimensionality space. Then we do collision checking and check the number of collisions the path makes with the obstacles.
 
+Results:
+
+\begin{figure}[t!]
+    \centering
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{3d_example_1.pdf}
+        \caption{a}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{3d_example_2.pdf}
+        \caption{b}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{3d_example_3.pdf}
+        \caption{c}
+    \end{subfigure}
+    \caption{3d examples}
+    \label{fig:3d_examples}
+\end{figure}
+
+You can see examples of our code running in Fig ~\ref{fig:3d_examples}. The results are listed in Figure WHAT. They show that 
+
 \begin{algorithm}[ht] 
     \caption{$\Function{Dimensionality Reduction}$}
     \label{algo:DR}
@@ -148,16 +175,6 @@ We then run Feature Agglomeration, Truncated SVD, PCA, Kernel PCA, and Randomize
         \STATE $Check for collisions$
     \end{algorithmic}
 \end{algorithm}
-
-Results:
-
-\begin{figure}
-  \includegraphics[width=\linewidth/3]{3d_example1.jpg}
-  \caption{bob}
-  \label{fig:3d_example}
-\end{figure}
-
-The results are listed in Figure WHAT. They show that 
 
 \begin{algorithm}[ht] 
     \caption{$\Function{PRM}^*$~\cite{karaman2011sampling}}
