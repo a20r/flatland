@@ -7,7 +7,7 @@ import pandas
 from collections import defaultdict
 
 
-planner_strs = ["RRTstar", "PRMstar"]
+planner_strs = ["PRMstar", "RRTConnect"]
 pl_clrs = {"RRTstar": "r", "PRMstar": "b"}
 transformer_strs = ["FeatureAgglomeration", "TruncatedSVD",
                     "PCA", "KernelPCA", "RandomizedPCA"]
@@ -45,7 +45,6 @@ def get_all(data, pl, n_ob, key):
     xs = list()
     for tr in transformer_strs:
         xs.append(data[pl][tr][n_ob][key])
-    print xs
     return xs
 
 
@@ -68,8 +67,6 @@ def make_plots(data, key, n_ob):
 if __name__ == "__main__":
     warnings.simplefilter("ignore")
     sns.set_context("poster", font_scale=2.2)
-    data = pandas.read_csv("data/data_copy.csv")
-    # subdata = data[data["n_obs"] == 30]
-    sns.barplot(x="transformer", y="path_length", hue="n_obs", data=data)
-    # make_plots(data, "n_collisions", 20)
+    data = pandas.read_csv("data/data.csv")
+    sns.barplot(x="transformer", y="num_failed", hue="n_obs", data=data)
     plt.show()
