@@ -91,5 +91,5 @@ def make_path_plot_3d():
     plt.plot(txt[:, 0], txt[:, 1], txt[:,2], 'bo-')
 
 if __name__ == "__main__":
-    make_path_plot_2d()
+    make_path_plot_3d()
     plt.show()

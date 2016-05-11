@@ -31,12 +31,13 @@ field_names = ["planner", "transformer", "n_collisions",
                "num_failed", "n_obs", "is_full_dim"]
 
 # n_obs = [70, 90, 110]
-n_obs = [3]
+n_obs = [14]
 n_runs = 2
-high_dim = 2
-low_dim = 2
+high_dim = 3
+low_dim = 3
 timeout = 1.5
-rad_mean = 7
+rad_mean = 5
+# rad_mean = 7
 
 
 def path_size(path):
