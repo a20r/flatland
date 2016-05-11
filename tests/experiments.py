@@ -61,6 +61,7 @@ def run_experiments(filename):
         for i, tr in enumerate(transformers):
             for j, pl in enumerate(planners):
                 random.seed(0)
+                np.random.seed(0)
                 for n_ob in n_obs:
                     row = dict()
                     data = defaultdict(list)
