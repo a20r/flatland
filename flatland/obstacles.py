@@ -15,8 +15,8 @@ class RandomObstacleGen(object):
         self.rad_mean = kwargs.get("rad_mean", 5)
         self.rad_std = kwargs.get("rad_std", 0.5)
         self.dim = kwargs.get("dim", 2)
-        self.sample_pts_mean = kwargs.get("sample_pts_mean", self.dim + 10)
-        self.sample_pts_std = kwargs.get("sample_pts_std", 3)
+        self.sample_pts_mean = kwargs.get("sample_pts_mean", self.dim ** 2)
+        self.sample_pts_std = kwargs.get("sample_pts_std", 0.1)
 
     def sample_n_sphere(self, rad, center):
         pt = np.zeros((self.dim,))
@@ -50,6 +50,6 @@ class RandomObstacleGen(object):
             ch = spatial.ConvexHull(pts)
             eqs = ch.equations
             poly = polytope.Polytope(
-                eqs[:, : - 1], -eqs[:, -1])
+                eqs[:, : - 1], -eqs[:, -1], minrep=True)
             obs.append((poly, ch.points))
         return obs

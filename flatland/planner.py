@@ -66,8 +66,8 @@ class FLPlanner(object):
     def solve(self, st, gl, timeout=1.0):
         space = ob.RealVectorStateSpace(self.dim)
         bounds = ob.RealVectorBounds(self.dim)
-        bounds.setLow(self.low_bound)
-        bounds.setHigh(self.high_bound)
+        bounds.setLow(min(st.min(), gl.min()))
+        bounds.setHigh(max(st.max(), gl.max()))
         space.setBounds(bounds)
         si = ob.SpaceInformation(space)
         si.setStateValidityChecker(

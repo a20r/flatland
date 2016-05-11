@@ -60,6 +60,7 @@ def make_path_plot_2d():
 
 def make_path_plot_3d():
     fig1 = plt.figure()
+    ax = fig1.gca(projection='3d')
 
     for i in os.listdir(obstacleFolder):
         obstaclePath = obstacleFolder + i
@@ -69,7 +70,6 @@ def make_path_plot_3d():
         CH = Delaunay(ob).convex_hull
         x,y,z = ob[:,0],ob[:,1],ob[:,2]
 
-        ax = fig1.gca(projection='3d')
         S = ax.plot_trisurf(x,y,z,triangles=CH,shade=True,cmap=cm.copper,lw=0.2)
 
     txt = np.loadtxt(rrtPath)
