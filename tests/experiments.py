@@ -16,28 +16,27 @@ from ompl import geometric as og
 from collections import defaultdict
 
 
-planners = [og.PRMstar]
+planners = [og.PRM, og.RRTConnect]
 transformers = [cluster.FeatureAgglomeration, decomp.TruncatedSVD,
                 decomp.PCA, decomp.RandomizedPCA,
                 None]
 
-planner_strs = ["PRMstar"]
+planner_strs = ["PRM", "RRTConnect"]
 transformer_strs = ["FeatureAgglomeration", "TruncatedSVD",
                     "PCA", "RandomizedPCA", "No Transform"]
 
 field_names = ["planner", "transformer", "n_collisions",
                "path_length", "n_collisions_std",
                "planning_duration_std", "path_length_std",
-               "num_failed", "n_obs", "is_full_dim"]
+               "num_failed", "n_obs", "is_full_dim", "duration",
+               "duration_std"]
 
-# n_obs = [70, 90, 110]
-n_obs = [14]
-n_runs = 2
-high_dim = 3
-low_dim = 3
+n_obs = [250, 300, 350]
+n_runs = 100
+high_dim = 8
+low_dim = 6
 timeout = 1.5
-rad_mean = 5
-# rad_mean = 7
+rad_mean = 14.8
 
 
 def path_size(path):
@@ -81,11 +80,11 @@ def run_experiments(filename):
                                     planner=pl, obstacles=obs,
                                     transform=tr)
                             try:
-                                path = planner.solve(start, goal, timeout)
-                                exit()
+                                path, dur = planner.solve(start, goal, timeout)
                                 data["n_collisions"].append(
                                     planner.check_path(path))
                                 data["path_length"].append(path_size(path))
+                                data["duration"].append(dur)
                             except ValueError:
                                 data["num_failed"].append(1)
                         except spatial.qhull.QhullError:
@@ -103,6 +102,8 @@ def run_experiments(filename):
                     row["path_length_std"] = np.std(data["path_length"])
                     row["num_failed"] = np.sum(data["num_failed"])
                     row["is_full_dim"] = tr is None
+                    row["duration"] = np.mean(data["duration"])
+                    row["duration_std"] = np.std(data["duration"])
                     writer.writerow(row)
 
 
