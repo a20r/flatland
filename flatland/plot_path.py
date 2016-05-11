@@ -89,15 +89,19 @@ def make_path_plot_3d():
     start = txt[0,0:2]
     goal = txt[-1,0:2]
 
-    startCircle = Circle(start,0.3,color='g')
-    goalCircle = Circle(goal,0.3,color='r')
+    startCircle = Circle(start,2,color='g')
+    goalCircle = Circle(goal,2,color='r')
     ax.add_patch(startCircle)
     ax.add_patch(goalCircle)
-    art3d.pathpatch_2d_to_3d(startCircle,z=txt[0,2],zdir='z')
-    art3d.pathpatch_2d_to_3d(goalCircle,z=txt[-1,2],zdir='z')
+    art3d.pathpatch_2d_to_3d(startCircle,z=txt[0,2],zdir='y')
+    art3d.pathpatch_2d_to_3d(goalCircle,z=txt[-1,2],zdir='y')
 
-    plt.plot(txt[:, 0], txt[:, 1], txt[:,2], 'bo-')
+    plt.plot(txt[:, 0], txt[:, 1], txt[:,2], 'bo-', markersize=10, linewidth=3)
 
 if __name__ == "__main__":
-    make_path_plot_2d()
+    import sys
+    if sys.argv[1] == "2":
+        make_path_plot_2d()
+    else:
+        make_path_plot_3d()
     plt.show()
