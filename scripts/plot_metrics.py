@@ -3,7 +3,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import warnings
 import pandas
-import sys
 
 
 def prettify(text):
@@ -20,6 +19,21 @@ if __name__ == "__main__":
     hue = "n_obs"
     rrt = data[data["planner"] == "RRTConnect"]
     prm = data[data["planner"] == "PRM"]
+    n_m = prm.query("transformer == 'No Transform'")["duration"].mean()
+    print n_m / prm.query("transformer == 'F. Agg.'")["duration"].mean()
+    print n_m / prm.query("transformer == 'TruncatedSVD'")["duration"].mean()
+    print n_m / prm.query("transformer == 'PCA'")["duration"].mean()
+    print n_m / prm.query("transformer == 'R. PCA'")["duration"].mean()
+
+    print "----"
+
+    n_m = prm.query("transformer == 'No Transform'")["path_length"].mean()
+    print prm.query("transformer == 'F. Agg.'")["path_length"].mean() / n_m
+    print prm.query("transformer == 'TruncatedSVD'")["path_length"].mean() \
+        / n_m
+    print prm.query("transformer == 'PCA'")["path_length"].mean() / n_m
+    print prm.query("transformer == 'R. PCA'")["path_length"].mean() / n_m
+
     plt.subplot(3, 2, 1)
     ax = sns.barplot(x="transformer", y="path_length", hue=hue, data=rrt)
     ax.set(xlabel="")
@@ -34,7 +48,7 @@ if __name__ == "__main__":
     plt.title("PRM")
     plt.subplot(3, 2, 3)
     ax = sns.barplot(x="transformer", y="duration", hue=hue, data=rrt)
-    ax.set(ylabel="Duration")
+    ax.set(ylabel="Comp. Time [s]")
     ax.set(xlabel="")
     ax.legend().remove()
     plt.subplot(3, 2, 4)

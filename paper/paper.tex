@@ -55,7 +55,7 @@ Planning}
 
 \maketitle
 
-\section{Background}
+\section{Introduction}
 
 Dimensionality reduction is a key component of making robotic motion planning
 fast and efficient. A rigid body has six degrees of freedom (DoF), so a
@@ -98,11 +98,6 @@ initial and goal configurations \cite{kavraki1996prm}. The map is constructed
 during the preprocessing phase by sampling random points in the C-space and
 then adding them to the vertices in the roadmap within a certain radius of the
 point. The algorithm is described in Alg~\ref{alg:PRM}.
-%PRM can be elevated to the asymptotically optimal PRM*, which is
-%described in Alg~\ref{alg:PRMstar}, by defining the radius to be a function of
-%the number of vertices and the dimensionality of the space
-%\cite{karaman2011sampling}. Since PRM* is asymptotically optimal, its solution
-%will converge to the optimal path as time goes to infinity.
 
 \subsection{RRTConnect}
 
@@ -117,7 +112,6 @@ described in Algos.~\ref{alg:extend_RRT},~\ref{alg:connect_RRT},
 and~\ref{alg:RRTConnect}, differs from RRT in that two trees, one with its root
 at the initial configuration and one with its root at the start configuration,
 grow towards each other \cite{kuffner2000rrt}.
-%RRT*, which is described in Alg~\ref{alg:RRTstar} differs from RRT in that for every new node, connections are tested to the new node from every other node that is within a certain radius from the new node \cite{karaman2011sampling}. The the tree is pruned so that edges that are not part of the shortest path from the root of the tree to the new node are removed. 
 
 \section{Problem Description}
 
@@ -177,6 +171,23 @@ $\mathbf{M}$ by cutting off low-value singular values. In this sense Truncated
 SVD is similar to PCA; however, instead of cutting off the lowest eigenvalues
 of the coviarance matrix, you are cutting off the singular values of the
 matrix.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.32\textwidth]{2d_example_1.pdf}
+    \includegraphics[width=0.32\textwidth]{2d_example_2.pdf}
+    \includegraphics[width=0.32\textwidth]{2d_example_3.pdf} \\
+    \includegraphics[width=0.32\textwidth]{3d_example_1.pdf}
+    \includegraphics[width=0.32\textwidth]{3d_example_2.pdf}
+    \includegraphics[width=0.32\textwidth]{3d_example_3.pdf}
+    \caption{Examples of paths found in 2D and 3D scenes of random obstacles
+    using the PRM algorithm. The green and red circles indicate the initial
+    and goal configurations respectively. The blue path indicates the candidate
+    solution through the space that connects the initial and goal
+    configurations.}
+    \label{fig:examples}
+\end{figure}
+
 
 \section{Methods}
 
@@ -258,28 +269,54 @@ $14.8$ for the convex polytopes.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.32\textwidth]{2d_example_1.pdf}
-    \includegraphics[width=0.32\textwidth]{2d_example_2.pdf}
-    \includegraphics[width=0.32\textwidth]{2d_example_3.pdf} \\
-    \includegraphics[width=0.32\textwidth]{3d_example_1.pdf}
-    \includegraphics[width=0.32\textwidth]{3d_example_2.pdf}
-    \includegraphics[width=0.32\textwidth]{3d_example_3.pdf}
-    \caption{Examples of paths found in 2D and 3D scenes of random obstacles
-    using the PRM algorithm. The green and red circles indicate the initial
-    and goal configurations respectively. The blue path indicates the candidate
-    solution through the space that connects the initial and goal
-    configurations.}
-    \label{fig:examples}
-\end{figure}
-
-\begin{figure}[h!]
-    \centering
     \makebox[\textwidth][c]{\includegraphics[width=1.5\textwidth]{plots}}
-    \caption{Figure}
+
+    \caption{Plots showing the length of the solution paths if found, the
+    time needed to find the solution, and the number of failed attempts out of
+    100 for each method of dimensionality reduction as well as in the high
+    dimensional space. The column of plots on the left shows the results for
+    the RRTConnect algorithm and the plots on the right show the results for
+PRM. Note, The Y-axes limits are not equal and that abbreviations were used to
+save space.  F.  Agg.  stands for Feature Agglomeration and R. PCA stands for
+Randomized PCA.}
+
+    \label{fig:plots}
+
 \end{figure}
 
-You can see examples of our code running in Fig.~\ref{fig:examples}. The
-results are listed in Figure WHAT. They show that 
+Fig.~\ref{fig:plots} shows plots of various measures of performance using
+different methods of dimensionality reduction for motion planing. The left and
+right columns show the results for RRTConnect and PRM algorithms respectively.
+The first, second, and third row show the average path length, computational
+time in seconds, and number of failed runs out of 100 respectively. For each
+dimensionality reduction technique, there are three bars presenting the results
+for 250, 300, and 350 randomly generated obstacles respectively. From the data
+we can see that both planners produced similarly sized paths for each
+dimensionality reduction technique, and that by not reducing the dimension, the
+planner is able to find a path roughly two times shorter.
+
+In terms of computational time, there is no significant difference between
+Truncated SVD, PCA, Randomized PCA, planning in the original space when
+planning with the RRTConnect algorithm. Whereas using Feature Agglomeration
+took slightly longer to compute for each set number of obstacles. When using
+PRM, the computational time was significantly improved by reducing the
+dimension for all methods.  Based on the data, using PRM without dimensionality
+reduction took roughly twice as long to compute for each method. This differing
+result between PRM and RRTConnect is likely due to the fact that PRM is a
+multi-query planning algorithm meaning that it constructs a data-structure that
+can be used for multiple planning queries whereas RRTConnect is only looking to
+find a single path. This means that the PRM algorithm tries to fully represent
+the connectivity of the environment whilst RRTConnect needs to determine the
+connectivity directed towards a goal. The reason dimensionality reduction
+significantly improves the computational time for PRM is that it is much faster
+to exhaust the search space at lower dimensions as opposed to higher
+dimensions.
+
+The RRTConnect algorithm had a much lower failure rate than PRM in all
+respective dimensionality reduction technique. This is due to the fact that
+RRTConnect is growing a tree towards the goal and PRM is randomly sampling and
+connecting points to a growing graph. For both algorithms, a similar trend
+exists for failure rate for planning in the reduced dimension space.
 
 \begin{algorithm}[ht] 
     \caption{$\Function{PRM}$~\cite{karaman2011sampling}}
