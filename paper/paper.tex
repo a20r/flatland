@@ -87,9 +87,9 @@ sampling-based motion planning techniques such as the Rapidly expanding Random
 Tree (RRT) and the Probabilistic RoadMap (PRM) are the most popular motion
 planning techniques.
 
-We used PRM* and RRTConnect in our project. 
+We used PRM and RRTConnect in our project. 
 
-\subsection{PRM*}
+\subsection{PRM}
 
 The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in
 which a roadmap is constructed by sampling random points in the C-space, and
@@ -97,11 +97,12 @@ the query phase in which a graph search over the roadmap is made to connect
 initial and goal configurations \cite{kavraki1996prm}. The map is constructed
 during the preprocessing phase by sampling random points in the C-space and
 then adding them to the vertices in the roadmap within a certain radius of the
-point. PRM can be elevated to the asymptotically optimal PRM*, which is
-described in Alg~\ref{alg:PRMstar}, by defining the radius to be a function of
-the number of vertices and the dimensionality of the space
-\cite{karaman2011sampling}. Since PRM* is asymptotically optimal, its solution
-will converge to the optimal path as time goes to infinity.
+point. The algorithm is described in Alg~\ref{alg:PRM}.
+%PRM can be elevated to the asymptotically optimal PRM*, which is
+%described in Alg~\ref{alg:PRMstar}, by defining the radius to be a function of
+%the number of vertices and the dimensionality of the space
+%\cite{karaman2011sampling}. Since PRM* is asymptotically optimal, its solution
+%will converge to the optimal path as time goes to infinity.
 
 \subsection{RRTConnect}
 
@@ -239,8 +240,8 @@ You can see examples of our code running in Fig.~\ref{fig:examples}. The
 results are listed in Figure WHAT. They show that 
 
 \begin{algorithm}[ht] 
-    \caption{$\Function{PRM}^*$~\cite{karaman2011sampling}}
-    \label{alg:PRMstar}
+    \caption{$\Function{PRM}~\cite{karaman2011sampling}}
+    \label{alg:PRM}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
@@ -248,10 +249,9 @@ results are listed in Figure WHAT. They show that
         \STATE $V \leftarrow \{x_{\Var{init}}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
         \STATE $E \leftarrow \emptyset$
         \FORALL{$v \in V$}
-            \STATE $U \leftarrow \Function{Near}(G = (V, E), v,
-            \gamma \cdot \Function{PRM}(\log(n) / n) ^ {1 / d})
-            \backslash \{v\}$
-            \FORALL{$u \in U$}
+            \STATE $U \leftarrow \Function{Near}(G = (V, E), x_{rand}, r);$
+            \STATE $ V \leftarrow V \cup {x_{rand}} $
+            \FORALL{$u \in U $}
                 \IF{$\Function{CollisionFree}(v, u)$}
                     \STATE $E \leftarrow E \cup \{(v, u), (u, v)\}$
                 \ENDIF
