@@ -9,7 +9,7 @@ Planning}
 \documentclass[12pt]{article}
 
 \usepackage[pdftex]{graphicx}
-\graphicspath{ {figs/} }
+\graphicspath{{figs/}}
 \usepackage{subcaption}
 
 \usepackage{amsmath}
@@ -62,21 +62,25 @@ fast and efficient. A rigid body has six degrees of freedom (DoF), so a
 multi-link robot such as a humanoid or snake robot can have dozens or hundreds
 of DoF. The rotational and translational transformations of a rigid body can be
 described with the 3-dimensional Special Euclidean group (known as SE(3)).
-SE(3) is homeomorphic to the topological space $\mathbb{R}^3\bigtimes\mathbb{RP}^3$ (where $\mathbb{RP}^3$ is the
+SE(3) is homeomorphic to the topological space
+$\mathbb{R}^3\bigtimes\mathbb{RP}^3$ (where $\mathbb{RP}^3$ is the
 3-dimensional real projective plane). Therefore it is easy to imagine a
-multi-link robot \cite{kuindersma2015optimization} or a multi-robot system \cite{alonso2015multi} with an arbitrarily complex state space. The picture is
+multi-link robot \cite{kuindersma2015optimization} or a multi-robot system
+\cite{alonso2015multi} with an arbitrarily complex state space. The picture is
 further complicated by the addition of obstacles into a robot's world. The
 state space for motion planning, which must take into account both the robot
-and obstacles, is called the configuration space (or C-space) \cite{lozano1983spatial}. 
+and obstacles, is called the configuration space (or C-space)
+\cite{lozano1983spatial}. 
 
 Motion planning essentially consists of a search over the configuration space
 from a start configuration to a goal configuration. A huge number of methods
 for searching through the configuration space have been developed, most of
 which can be divided into two classes, sampling-based motion planning and
-combinatorial motion planning \cite{lavalle2006planning}. In sampling-based motion planning, obstacles in
-the C-space are defined implicitly so that the path is constructed by randomly
-or pseudorandomly sampling points from the C-space, doing collision
-checking, and connecting valid points to their nearest neighbors. In combinatorial motion planning, obstacles are defined explicitly
+combinatorial motion planning \cite{lavalle2006planning}. In sampling-based
+motion planning, obstacles in the C-space are defined implicitly so that the
+path is constructed by randomly or pseudorandomly sampling points from the
+C-space, doing collision checking, and connecting valid points to their nearest
+neighbors. In combinatorial motion planning, obstacles are defined explicitly
 and a complete search of the C-space is made. Because of the difficulty of
 explicitly defining all of the geometry in a potentially complex world,
 sampling-based motion planning techniques such as the Rapidly expanding Random
@@ -85,9 +89,33 @@ planning techniques.
 
 We used PRM* and RRTConnect in our project. 
 
-\subsection{PRM*}: The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in which a roadmap is constructed by sampling random points in the C-space, and the query phase in which a graph search over the roadmap is made to connect initial and goal configurations \cite{kavraki1996prm}. The map is constructed during the preprocessing phase by sampling random points in the C-space and then adding them to the vertices in the roadmap within a certain radius of the point. PRM can be elevated to the asymptotically optimal PRM*, which is described in Alg~\ref{alg:PRMstar}, by defining the radius to be a function of the number of vertices and the dimensionality of the space \cite{karaman2011sampling}. Since PRM* is asymptotically optimal, its solution will converge to the optimal path as time goes to infinity.
+\subsection{PRM*}
 
-\subsection{RRTConnect}: The Rapidly exploring Random Tree algorithm works by building up a tree from the initial configuration to the goal configuration \cite{lavalle1998rrt}. Starting with the initial configuration as the root, it incrementally attempts to add randomly selected samples to the tree until it reaches the goal configuration. The tree is ``rapidly exploring'' because the sample selection is biased towards areas with large Voronoi regions (where the Voronoi regions are computed based off of the nodes of the tree). RRTConnect, which is described in Algs~\ref{alg:extend_RRT},~\ref{alg:connect_RRT}, and~\ref{alg:RRTConnect}, differs from RRT in that two trees, one with its root at the initial configuration and one with its root at the start configuration, grow towards each other \cite{kuffner2000rrt}.
+The Probabilistic RoadMap algorithm has two phases: the preprocessing phase in
+which a roadmap is constructed by sampling random points in the C-space, and
+the query phase in which a graph search over the roadmap is made to connect
+initial and goal configurations \cite{kavraki1996prm}. The map is constructed
+during the preprocessing phase by sampling random points in the C-space and
+then adding them to the vertices in the roadmap within a certain radius of the
+point. PRM can be elevated to the asymptotically optimal PRM*, which is
+described in Alg~\ref{alg:PRMstar}, by defining the radius to be a function of
+the number of vertices and the dimensionality of the space
+\cite{karaman2011sampling}. Since PRM* is asymptotically optimal, its solution
+will converge to the optimal path as time goes to infinity.
+
+\subsection{RRTConnect}
+
+The Rapidly exploring Random Tree algorithm works by building up a tree from
+the initial configuration to the goal configuration \cite{lavalle1998rrt}.
+Starting with the initial configuration as the root, it incrementally attempts
+to add randomly selected samples to the tree until it reaches the goal
+configuration.  The tree is ``rapidly exploring'' because the sample selection
+is biased towards areas with large Voronoi regions (where the Voronoi regions
+are computed based off of the nodes of the tree). RRTConnect, which is
+described in Algs~\ref{alg:extend_RRT},~\ref{alg:connect_RRT},
+and~\ref{alg:RRTConnect}, differs from RRT in that two trees, one with its root
+at the initial configuration and one with its root at the start configuration,
+grow towards each other \cite{kuffner2000rrt}.
 %RRT*, which is described in Alg~\ref{alg:RRTstar} differs from RRT in that for every new node, connections are tested to the new node from every other node that is within a certain radius from the new node \cite{karaman2011sampling}. The the tree is pruned so that edges that are not part of the shortest path from the root of the tree to the new node are removed. 
 
 \section{Problem Description}
@@ -104,30 +132,72 @@ planning while providing reliable obstacle avoidance.
 
 \section{Dimensionality Reduction}
 
-We used Feature Agglomeration, Truncated SVD, PCA, and Randomized PCA to perform dimensionality reduction. We will briefly summarize each of these techniques.
+We used Feature Agglomeration, Truncated SVD, PCA, and Randomized PCA to
+perform dimensionality reduction. We will briefly summarize each of these
+techniques.
 
-\subsection{PCA} Principle Component Analysis, or PCA, transforms a set of variables into 
-their ``principle components", or linearly uncorrelated variables. In other words, the axes of the dataset in question are reoriented so the Rayleigh quotient, which is related to the covariance of the dataset, along the first axis is maximized. After the first axis has been set, the second axis is then set to maximize the Rayleigh quotient of the dataset along that axis, and so on, so that the first axis has the highest Rayleigh quotient, the second axis has the second highest, and so on. Dimensionality reduction is then performed by chopping off the axes with the lowest Rayleigh quotients (which corresponded to axes with the lowest variance).
+\subsection{PCA}
+
+Principle Component Analysis, or PCA, transforms a set of variables into their
+``principle components", or linearly uncorrelated variables. In other words,
+the axes of the dataset in question are reoriented so the Rayleigh quotient,
+which is related to the covariance of the dataset, along the first axis is
+maximized. After the first axis has been set, the second axis is then set to
+maximize the Rayleigh quotient of the dataset along that axis, and so on, so
+that the first axis has the highest Rayleigh quotient, the second axis has the
+second highest, and so on. Dimensionality reduction is then performed by
+chopping off the axes with the lowest Rayleigh quotients (which corresponded to
+axes with the lowest variance).
 
 $$
 \mathbf{w}_{(1)} = {\operatorname{\arg\,max}}\, \left\{ \frac{\mathbf{w}^T\mathbf{X}^T \mathbf{X w}}{\mathbf{w}^T \mathbf{w}} \right\}
 $$
 
-%Kernel PCA: Kernel PCA enables non-linear dimensionality reduction by using kernels to create a non-linear mapping from a high dimension to a lower dimension.
 
-\subsection{Randomized PCA} In Randomized PCA, computations are sped up by only approximating the singular vectors of the components.
+\subsection{Randomized PCA}
 
-\subsection{Feature Agglomeration} Feature Agglomeration groups together similar features to reduce the number of features. It does this by using agglomerative clustering, in which every data point starts as a cluster, and clusters are merged together.
+In Randomized PCA, computations are sped up by only approximating the singular vectors of the components.
 
-\subsection{Truncated SVD} Truncated SVD works best with sparse matrices.
+\subsection{Feature Agglomeration}
+
+Feature Agglomeration groups together similar features to reduce the number of
+features. It does this by using agglomerative clustering, in which every data
+point starts as a cluster, and clusters are merged together.
+
+\subsection{Truncated SVD}
+
+Truncated SVD works best with sparse matrices.
 
 \section{Methods}
 
-\subsection{Simplifications} Although our aim is to show how dimensionality reduction techniques can speed up motion planning for robots, doing motion planning for an actual robot is very hard (specifying link geometry, defining constraints between links, etc). Therefore we limited ourselves to path planning for a point in $\mathbb{R}^n$, and we approximated obstacles as being convex polytopes. This is a valid simplification of the robot motion planning problem for several reasons. The first reason is that most real robots actually operate in a C-space similar to $\mathbb{R}^n$. This is because $\mathbb{RP}^3$, the space in which the rotation of a rigid body occurs, simplifies to $\mathbb{R}^3$ if the joint cannot make a full rotation. Second, in defining the C-space, the obstacle space takes into account the interaction of the robot geometry with obstacles. Therefore motion planning through the free space can be done using a point to represent the robot (since the geometry of the robot is implicitly included in the obstacle space). Therefore, although our simulations do not represent real robots and real obstacles, they do approximate them.
+\subsection{Simplifications}
 
-We implemented an n-dimensional world in which to test these algorithms. We structured our code so that we could run our tests in any space of dimension $d \geq 2$. We also made visualization scripts for the 2- and 3-dimensional tests (examples of which can be seen in Figs ~\ref{fig:2d_examples} and ~\ref{fig:3d_examples}).
+Although our aim is to show how dimensionality reduction techniques can speed
+up motion planning for robots, doing motion planning for an actual robot is
+very hard (specifying link geometry, defining constraints between links, etc).
+Therefore we limited ourselves to path planning for a point in $\mathbb{R}^n$,
+and we approximated obstacles as being convex polytopes. This is a valid
+simplification of the robot motion planning problem for several reasons. The
+first reason is that most real robots actually operate in a C-space similar to
+$\mathbb{R}^n$. This is because $\mathbb{RP}^3$, the space in which the
+rotation of a rigid body occurs, simplifies to $\mathbb{R}^3$ if the joint
+cannot make a full rotation. Second, in defining the C-space, the obstacle
+space takes into account the interaction of the robot geometry with obstacles.
+Therefore motion planning through the free space can be done using a point to
+represent the robot (since the geometry of the robot is implicitly included in
+the obstacle space). Therefore, although our simulations do not represent real
+robots and real obstacles, they do approximate them.
 
-Next we made a random obstacle generator. We create n-dimensional convex polytopes by sampling $n^{2}$ random points on the n-sphere. We did this for each point by choosing $n-1$ random angles and then defining $x_1$ through $x_n$ using the equations below.
+We implemented an n-dimensional world in which to test these algorithms. We
+structured our code so that we could run our tests in any space of dimension $d
+\geq 2$. We also made visualization scripts for the 2- and 3-dimensional tests
+(examples of which can be seen in Figs~\ref{fig:2d_examples}
+and~\ref{fig:3d_examples}).
+
+Next we made a random obstacle generator. We create n-dimensional convex
+polytopes by sampling $n^{2}$ random points on the n-sphere. We did this for
+each point by choosing $n-1$ random angles and then defining $x_1$ through
+$x_n$ using the equations below.
 
 \begin{align*}
 x_1 &= r \cos(\phi_1) \\
@@ -138,7 +208,14 @@ x_{n-1} &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \cos(\phi_{n-1}) \\
 x_n &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \sin(\phi_{n-1}) \,.
 \end{align*}
 
-After generating random obstacles, we ran Feature Agglomeration, Truncated SVD, PCA, and Randomized PCA to reduce the dimensionality of the space. We then ran PRM* and RRTConnect on each of these reduced dimensionality spaces, as well as on the full-dimensionality space as a control. We then ran an inverse transform on the paths that we find to return them to the full-dimensionality space. We collected data on the number of runs that fail, the time it takes to run the algorithm, and the path length returned. A summary of this paragraph can be found in Alg~\ref{alg:DR}. 
+After generating random obstacles, we ran Feature Agglomeration, Truncated SVD,
+PCA, and Randomized PCA to reduce the dimensionality of the space. We then ran
+PRM* and RRTConnect on each of these reduced dimensionality spaces, as well as
+on the full-dimensionality space as a control. We then ran an inverse transform
+on the paths that we find to return them to the full-dimensionality space. We
+collected data on the number of runs that fail, the time it takes to run the
+algorithm, and the path length returned. A summary of this paragraph can be
+found in Alg~\ref{alg:DR}. 
 
 \section{Results}
 
@@ -149,7 +226,6 @@ After generating random obstacles, we ran Feature Agglomeration, Truncated SVD, 
         \includegraphics[width=\textwidth]{2d_example_1.pdf}
         \caption{a}
     \end{subfigure}%
-    ~ 
     \begin{subfigure}[t]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{2d_example_2.pdf}
@@ -171,7 +247,6 @@ After generating random obstacles, we ran Feature Agglomeration, Truncated SVD, 
         \includegraphics[width=\textwidth]{3d_example_1.pdf}
         \caption{a}
     \end{subfigure}%
-    ~ 
     \begin{subfigure}[t]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{3d_example_2.pdf}
@@ -192,7 +267,8 @@ After generating random obstacles, we ran Feature Agglomeration, Truncated SVD, 
     \caption{Figure}
 \end{figure}
 
-You can see examples of our code running in Fig ~\ref{fig:3d_examples}. The results are listed in Figure WHAT. They show that 
+You can see examples of our code running in Fig~\ref{fig:3d_examples}. The
+results are listed in Figure WHAT. They show that 
 
 \begin{algorithm}[ht] 
     \caption{$\Function{PRM}^*$~\cite{karaman2011sampling}}
