@@ -113,7 +113,7 @@ to add randomly selected samples to the tree until it reaches the goal
 configuration.  The tree is ``rapidly exploring'' because the sample selection
 is biased towards areas with large Voronoi regions (where the Voronoi regions
 are computed based off of the nodes of the tree). RRTConnect, which is
-described in Algs~\ref{alg:extend_RRT},~\ref{alg:connect_RRT},
+described in Algos.~\ref{alg:extend_RRT},~\ref{alg:connect_RRT},
 and~\ref{alg:RRTConnect}, differs from RRT in that two trees, one with its root
 at the initial configuration and one with its root at the start configuration,
 grow towards each other \cite{kuffner2000rrt}.
@@ -140,26 +140,43 @@ techniques.
 \subsection{PCA}
 
 Principle Component Analysis, or PCA, transforms a set of variables into their
-``principal components", or linearly uncorrelated variables \cite{shlens2014pca}. Given an $m \times n$ matrix $\mathbf{X}$, you can find its principal components by finding an orthonormal matrix $\mathbf{P}$ in $ \mathbf{Y} = \mathbf{PX} $ such that $\mathbf{C_Y} = \mathbf{YY}^T/n$. The rows of $\mathbf{P}$ are the principal components of $\mathbf{X}$. In other words,
-the axes of the dataset in question are reoriented so that the covariance of the data along the first axis is minimized. After the first axis has been set, the second axis is then set to
-minimize the covariance of the dataset along that axis, and so on, so
-that the first axis has the lowest covariance, the second axis has the
-second lowest, and so on. Dimensionality reduction is then performed by
-chopping off the axes with the high covariance.
+``principal components", or linearly uncorrelated variables
+\cite{shlens2014pca}. Given an $m \times n$ matrix $\mathbf{X}$, you can find
+its principal components by finding an orthonormal matrix $\mathbf{P}$ in $
+\mathbf{Y} = \mathbf{PX} $ such that $\mathbf{C_Y} = \mathbf{YY}^T/n$. The rows
+of $\mathbf{P}$ are the principal components of $\mathbf{X}$. In other words,
+the axes of the dataset in question are reoriented so that the covariance of
+the data along the first axis is minimized. After the first axis has been set,
+the second axis is then set to minimize the covariance of the dataset along
+that axis, and so on, so that the first axis has the lowest covariance, the
+second axis has the second lowest, and so on. Dimensionality reduction is then
+performed by chopping off the axes with the high covariance.
 
 \subsection{Randomized PCA}
 
-In Randomized PCA, computations are sped up by approximating the largest singular vectors of the components.
+In Randomized PCA, computations are sped up by only approximating the singular
+vectors of the components.
 
 \subsection{Feature Agglomeration}
 
-Feature Agglomeration is a form of hierarchical clustering in which clusters are merged or split successively \cite{featureagglomeration}. Feature Agglomeration groups together similar features to reduce the number of
+Feature Agglomeration is a form of hierarchical clustering in which clusters
+are merged or split successively \cite{featureagglomeration}. Feature
+Agglomeration groups together similar features to reduce the number of
 features. It does this by using agglomerative clustering, in which every data
 point starts as a cluster, and clusters are merged together.
 
 \subsection{Truncated SVD}
 
-In singular value decomposition, a matrix $\mathbf{M}$ is factorized into the form $\mathbf{U} \Sigma \mathbf{V^*}$. $\Sigma$ is a diagonal matrix, and the entries of $\Sigma$ are the singular values of $\mathbf{M}$. In Truncated SVD, $\mathbf{M}$ is approximated by matrices $\mathbf{U_k} \Sigma_k \mathbf{V^*_k}$, where $ k < r $, $r$ being the number of non-zero singular values of the matrix \cite{maciejewski1989svd}. In effect you are approximating $\mathbf{M}$ by cutting off low-value singular values. In this sense Truncated SVD is similar to PCA; however, instead of cutting off the lowest eigenvalues of the coviarance matrix, you are cutting off the singular values of the matrix.
+In singular value decomposition, a matrix $\mathbf{M}$ is factorized into the
+form $\mathbf{U} \Sigma \mathbf{V^*}$. $\Sigma$ is a diagonal matrix, and the
+entries of $\Sigma$ are the singular values of $\mathbf{M}$. In Truncated SVD,
+$\mathbf{M}$ is approximated by matrices $\mathbf{U_k} \Sigma_k
+\mathbf{V^*_k}$, where $ k < r $, $r$ being the number of non-zero singular
+values of the matrix \cite{maciejewski1989svd}. In effect you are approximating
+$\mathbf{M}$ by cutting off low-value singular values. In this sense Truncated
+SVD is similar to PCA; however, instead of cutting off the lowest eigenvalues
+of the coviarance matrix, you are cutting off the singular values of the
+matrix.
 
 \section{Methods}
 
@@ -190,27 +207,52 @@ Examples of randomly generated 2D and 3D scenes with candidate solution paths
 can be seen in Fig.~\ref{fig:examples}.
 
 Next we made a random obstacle generator. We create n-dimensional convex
-polytopes by sampling $n^{2}$ random points on the n-sphere. We did this for
-each point by choosing $n-1$ random angles and then defining $x_1$ through
-$x_n$ using the equations below.
+polytopes by sampling $n^{2}$ random points within the $n$-sphere. To generate
+a single point, you must sample $n - 1$ angles from a uniform distribution
+between 0 and $2\pi$, $n$ radii from a Gaussian distribution,
+$\mathcal{N}(r_{\mu}, r_{\sigma})$ where $r_{\mu}$ and $r_{\sigma}$ are the
+mean and standard deviation for the radius of the convex polytope, and $n$
+floats to act as the center of the $n$-sphere.  Then you use the series of
+equations in Eq.~\ref{eq:nsphere} to produce a randomly sampled point within
+the $n$-sphere where $c_k$, $r_k$, and $\phi_k$ are the centers, radii, and
+angles respectively.  To produce a convex polytope, we then computed the
+$n$-dimensional convex hull over these points. The convex hull then provided
+the normal equations and offsets for each facet on the polytope.
 
-\begin{align*}
-x_1 &= r \cos(\phi_1) \\
-x_2 &= r \sin(\phi_1) \cos(\phi_2) \\
-x_3 &= r \sin(\phi_1) \sin(\phi_2) \cos(\phi_3) \\
-    &\vdots\\
-x_{n-1} &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \cos(\phi_{n-1}) \\
-x_n &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \sin(\phi_{n-1}) \,.
-\end{align*}
+\begin{align}
+    \begin{split}
+        x_1 &= c_1 + r_1 \cos(\phi_1) \\
+        x_2 &= c_2 + r_2 \sin(\phi_1) \cos(\phi_2) \\
+        x_3 &= c_3 + r_3 \sin(\phi_1) \sin(\phi_2) \cos(\phi_3) \\
+            &\vdots\\
+        x_{n-1} &= c_{n - 1} + r_{n - 1} \sin(\phi_1) \cdots \sin(\phi_{n-2}) \cos(\phi_{n-1}) \\
+        x_n &= c_n + r_{n} \sin(\phi_1) \cdots \sin(\phi_{n-2}) \sin(\phi_{n-1}) \,.
+    \end{split}
+    \label{eq:nsphere}
+\end{align}
 
 After generating random obstacles, we ran Feature Agglomeration, Truncated SVD,
-PCA, and Randomized PCA to reduce the dimensionality of the space. We then ran
-PRM* and RRTConnect on each of these reduced dimensionality spaces, as well as
-on the full-dimensionality space as a control. We then ran an inverse transform
-on the paths that we find to return them to the full-dimensionality space. We
-collected data on the number of runs that fail, the time it takes to run the
-algorithm, and the path length returned. A summary of this paragraph can be
-found in Alg~\ref{alg:DR}. 
+PCA, and Randomized PCA to reduce the dimensionality of the space by using the
+sampled points within each $n$-sphere as training data. We then ran PRM* and
+RRTConnect on each of these reduced dimensionality spaces, as well as on the
+fully-dimensional space as a control. We then ran an inverse transform on the
+paths that we find to return them to the fully-dimensional space in order to
+verify that the path in the reduced dimension did not come into collision with
+obstacles. We collected data on the number of runs that fail to find a
+solution, the time it takes to run the algorithm, and the length of the
+solution if one was found.  A summary of this paragraph can be found in
+Algo.~\ref{alg:DR}.
+
+For our experiments, we varied the number of random obstacles in the scene, the
+planning algorithm used, and the method of dimensionality reduction. For each
+problem instance, the random generator was seeded in order to make fair
+comparisons between the planners and dimensionality reduction techniques.
+Also, since the algorithms are non-deterministic, each problem instance
+executed 100 times. We used scenes with 250, 300, and 350 obstacles in order to
+measure how the planners and dimensionality reduction techniques vary in their
+performance with varying levels of obstacle density. In the results presented,
+we are reducing from 8 dimensions to 6 dimensions and using mean radius of
+$14.8$ for the convex polytopes.
 
 \section{Results}
 

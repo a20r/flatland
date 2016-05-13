@@ -1,0 +1,68 @@
+\begin{thebibliography}{10}
+
+\bibitem{featureagglomeration}
+{\em 2.3 Clustering: Hierarchical Clustering}.
+\newblock 2016.
+\newblock http://scikit-learn.org/stable/modules/clustering.html/.
+
+\bibitem{alonso2015multi}
+Javier Alonso-Mora, Stuart Baker, and Daniela Rus.
+\newblock Multi-robot navigation in formation via sequential convex
+  programming.
+\newblock In {\em Intelligent Robots and Systems (IROS), 2015 IEEE/RSJ
+  International Conference on}, pages 4634--4641. IEEE, 2015.
+
+\bibitem{karaman2011sampling}
+Sertac Karaman and Emilio Frazzoli.
+\newblock Sampling-based algorithms for optimal motion planning.
+\newblock {\em The International Journal of Robotics Research}, 30(7):846--894,
+  2011.
+
+\bibitem{kavraki1996prm}
+Lydia~E Kavraki, P.~Svestka, Jean-Claude Latombe, and M.~Overmars.
+\newblock Probabilistic roadmaps for path planning in high dimensional
+  configuration spaces.
+\newblock {\em IEEE Transactions on Robotics and Automation}, 12(4):566--580,
+  1996.
+
+\bibitem{kuffner2000rrt}
+James~J Kuffner and Steven~M LaValle.
+\newblock Rrt-connect: An efficient approach to single-query path planning.
+\newblock In {\em Robotics and Automation, 2000. Proceedings. ICRA'00. IEEE
+  International Conference on}, volume~2, pages 995--1001. IEEE, 2000.
+
+\bibitem{kuindersma2015optimization}
+Scott Kuindersma, Robin Deits, Maurice Fallon, Andr{\'e}s Valenzuela, Hongkai
+  Dai, Frank Permenter, Twan Koolen, Pat Marion, and Russ Tedrake.
+\newblock Optimization-based locomotion planning, estimation, and control
+  design for the atlas humanoid robot.
+\newblock {\em Autonomous Robots}, pages 1--27, 2015.
+
+\bibitem{lavalle1998rrt}
+Steven~M LaValle.
+\newblock Rapidly-exploring random trees a Цew tool for path planning.
+\newblock 1998.
+
+\bibitem{lavalle2006planning}
+Steven~M LaValle.
+\newblock {\em Planning algorithms}.
+\newblock Cambridge university press, 2006.
+
+\bibitem{lozano1983spatial}
+Tomas Lozano-Perez.
+\newblock Spatial planning: A configuration space approach.
+\newblock {\em Computers, IEEE Transactions on}, 100(2):108--120, 1983.
+
+\bibitem{maciejewski1989svd}
+Anthony~A Maciejewski and Charles~A Klein.
+\newblock The singular value decomposition: Computation and applications to
+  robotics.
+\newblock {\em The International journal of robotics research}, 8(6):63--79,
+  1989.
+
+\bibitem{shlens2014pca}
+Jonathon Shlens.
+\newblock A tutorial on principal component analysis.
+\newblock {\em arXiv preprint arXiv:1404.1100}, 2014.
+
+\end{thebibliography}
