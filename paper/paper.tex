@@ -188,11 +188,13 @@ represent the robot (since the geometry of the robot is implicitly included in
 the obstacle space). Therefore, although our simulations do not represent real
 robots and real obstacles, they do approximate them.
 
+\subsection{Experimental Setup}
+
 We implemented an n-dimensional world in which to test these algorithms. We
 structured our code so that we could run our tests in any space of dimension $d
-\geq 2$. We also made visualization scripts for the 2- and 3-dimensional tests
-(examples of which can be seen in Figs~\ref{fig:2d_examples}
-and~\ref{fig:3d_examples}).
+\geq 2$. We also made visualization scripts for the 2 and 3 dimensional tests.
+Examples of randomly generated 2D and 3D scenes with candidate solution paths
+can be seen in Fig.~\ref{fig:examples}.
 
 Next we made a random obstacle generator. We create n-dimensional convex
 polytopes by sampling $n^{2}$ random points on the n-sphere. We did this for
@@ -219,55 +221,29 @@ found in Alg~\ref{alg:DR}.
 
 \section{Results}
 
-\begin{figure}[t!]
+\begin{figure}[h!]
     \centering
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{2d_example_1.pdf}
-        \caption{a}
-    \end{subfigure}%
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{2d_example_2.pdf}
-        \caption{b}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{2d_example_3.pdf}
-        \caption{c}
-    \end{subfigure}
-    \caption{2d examples}
-    \label{fig:2d_examples}
-\end{figure}
-
-\begin{figure}[t!]
-    \centering
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{3d_example_1.pdf}
-        \caption{a}
-    \end{subfigure}%
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{3d_example_2.pdf}
-        \caption{b}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{3d_example_3.pdf}
-        \caption{c}
-    \end{subfigure}
-    \caption{3d examples}
-    \label{fig:3d_examples}
+    \includegraphics[width=0.32\textwidth]{2d_example_1.pdf}
+    \includegraphics[width=0.32\textwidth]{2d_example_2.pdf}
+    \includegraphics[width=0.32\textwidth]{2d_example_3.pdf} \\
+    \includegraphics[width=0.32\textwidth]{3d_example_1.pdf}
+    \includegraphics[width=0.32\textwidth]{3d_example_2.pdf}
+    \includegraphics[width=0.32\textwidth]{3d_example_3.pdf}
+    \caption{Examples of paths found in 2D and 3D scenes of random obstacles
+    using the PRM algorithm. The green and red circles indicate the initial
+    and goal configurations respectively. The blue path indicates the candidate
+    solution through the space that connects the initial and goal
+    configurations.}
+    \label{fig:examples}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{plots}
+    \makebox[\textwidth][c]{\includegraphics[width=1.5\textwidth]{plots}}
     \caption{Figure}
 \end{figure}
 
-You can see examples of our code running in Fig~\ref{fig:3d_examples}. The
+You can see examples of our code running in Fig.~\ref{fig:examples}. The
 results are listed in Figure WHAT. They show that 
 
 \begin{algorithm}[ht] 
