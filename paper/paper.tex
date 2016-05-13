@@ -104,7 +104,82 @@ point. The algorithm is described in Alg~\ref{alg:PRM}.
 %\cite{karaman2011sampling}. Since PRM* is asymptotically optimal, its solution
 %will converge to the optimal path as time goes to infinity.
 
+\begin{algorithm}[t] 
+    \caption{$\Function{PRM}$~\cite{karaman2011sampling}}
+    \label{alg:PRM}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \STATE $V \leftarrow \{x_{\Var{init}}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
+        \STATE $E \leftarrow \emptyset$
+        \FORALL{$v \in V$}
+            \STATE $U \leftarrow \Function{NearestNeighbors}(v)$
+            \FORALL{$u \in U $}
+                \IF{$\Function{CollisionFree}(v, u)$}
+                    \STATE $E \leftarrow E \cup \{(v, u), (u, v)\}$
+                \ENDIF
+            \ENDFOR
+        \ENDFOR
+        \RETURN $G = (V, E)$
+
+    \end{algorithmic}
+\end{algorithm}
+
 \subsection{RRTConnect}
+
+\begin{algorithm}[t] 
+    \caption{$\Function{Extend\_RRT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
+    \label{alg:extend_RRT}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \STATE $ q_{near} \leftarrow \Function{NEAREST\_NEIGHBOR($q$,$\;\mathcal{T}$)} $
+        \IF{ $ \Function{NEW\_CONFIG($q$,$\;q_{near}$,$\;q_{new}$)} $}
+            \STATE $ \mathcal{T}.\text{add\_vertex($q_{new}$)}; $
+            \STATE $ \mathcal{T}.\text{add\_edge($q_{near}$,$\;q_{new}$)}; $
+            \IF{$ q_{new} = q $}
+                \RETURN $Reached$;
+            \ELSE
+                \RETURN $Advanced$;
+            \ENDIF
+        \ENDIF
+        \RETURN $Trapped$;
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t] 
+    \caption{$\Function{Connect\_RRT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
+    \label{alg:connect_RRT}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \REPEAT 
+            \STATE $S \leftarrow \Function{EXTEND\_RRT($\mathcal{T}$,$\;q$)};$ 
+        \UNTIL {$ \textbf{not} \; (S = Advanced)$}
+        \RETURN $S;$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[!h] 
+    \caption{$\Function{RRTConnect($q_{init}$,$\;q_{goal}$)}$~\cite{kuffner2000rrt}}
+    \label{alg:RRTConnect}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \STATE $\mathcal{T}_a$.init($q_{init}$); $ \mathcal{T}_b$.init($q_{goal}$);
+        \FOR{$k = 1 \ \TO \ K$}
+            \STATE $q_{rand} \leftarrow \Function{RANDOM\_CONFIG()}$;
+            \IF {$\textbf{not} \ (\Function{EXTEND\_RRT($\mathcal{T}_a$,$\;q_{rand} = Trapped$)})$}
+                \IF {$ (\Function{CONNECT\_RRT($\mathcal{T}_b,q_{new}$}) = Reached $}
+                    \RETURN $ \Function{PATH($\mathcal{T}_a,\mathcal{T}_b$)} $
+                \ENDIF
+            \STATE \Function{SWAP($\mathcal{T}_a,\mathcal{T}_b)$}
+            \ENDIF
+        \ENDFOR
+        \RETURN $Failure$
+    \end{algorithmic}
+\end{algorithm}
 
 The Rapidly exploring Random Tree algorithm works by building up a tree from
 the initial configuration to the goal configuration \cite{lavalle1998rrt}.
@@ -231,6 +306,24 @@ the normal equations and offsets for each facet on the polytope.
     \label{eq:nsphere}
 \end{align}
 
+\begin{algorithm}[ht] 
+    \caption{$\Function{Dimensionality Reduction}$}
+    \label{alg:DR}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \STATE Specify dimension, dimensionality reduction technique, and obstacle information
+        \STATE Generate random obstacles based off of obstacle information
+        \STATE Fit dimensionality reduction transform to the space
+        \STATE Transform the space
+        \STATE Run PRM* or RRTConnect over the space
+        \STATE Inverse transform the path back to the original dimension
+        \STATE Check for collisions
+        \RETURN Path\_length, duration, num\_failed
+    \end{algorithmic}
+\end{algorithm}
+
 After generating random obstacles, we ran Feature Agglomeration, Truncated SVD,
 PCA, and Randomized PCA to reduce the dimensionality of the space by using the
 sampled points within each $n$-sphere as training data. We then ran PRM* and
@@ -281,82 +374,6 @@ $14.8$ for the convex polytopes.
 You can see examples of our code running in Fig.~\ref{fig:examples}. The
 results are listed in Figure WHAT. They show that 
 
-\begin{algorithm}[ht] 
-    \caption{$\Function{PRM}$~\cite{karaman2011sampling}}
-    \label{alg:PRM}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-
-        \STATE $V \leftarrow \{x_{\Var{init}}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
-        \STATE $E \leftarrow \emptyset$
-        \FORALL{$v \in V$}
-            \STATE $U \leftarrow \Function{NearestNeighbors}(v)$
-            \FORALL{$u \in U $}
-                \IF{$\Function{CollisionFree}(v, u)$}
-                    \STATE $E \leftarrow E \cup \{(v, u), (u, v)\}$
-                \ENDIF
-            \ENDFOR
-        \ENDFOR
-        \RETURN $G = (V, E)$
-
-    \end{algorithmic}
-\end{algorithm}
-
-
-\begin{algorithm}[ht] 
-    \caption{$\Function{Extend\_RRT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
-    \label{alg:extend_RRT}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-        \STATE $ q_{near} \leftarrow \Function{NEAREST\_NEIGHBOR($q$,$\;\mathcal{T}$)} $
-        \IF{ $ \Function{NEW\_CONFIG($q$,$\;q_{near}$,$\;q_{new}$)} $}
-            \STATE $ \mathcal{T}.\text{add\_vertex($q_{new}$)}; $
-            \STATE $ \mathcal{T}.\text{add\_edge($q_{near}$,$\;q_{new}$)}; $
-            \IF{$ q_{new} = q $}
-                \RETURN $Reached$;
-            \ELSE
-                \RETURN $Advanced$;
-            \ENDIF
-        \ENDIF
-        \RETURN $Trapped$;
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[ht] 
-    \caption{$\Function{Connect\_RRT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
-    \label{alg:connect_RRT}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-        \REPEAT 
-            \STATE $S \leftarrow \Function{EXTEND\_RRT($\mathcal{T}$,$\;q$)};$ 
-        \UNTIL {$ \textbf{not} \; (S = Advanced)$}
-        \RETURN $S;$
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[ht] 
-    \caption{$\Function{RRTConnect($q_{init}$,$\;q_{goal}$)}$~\cite{kuffner2000rrt}}
-    \label{alg:RRTConnect}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-        \STATE $\mathcal{T}_a$.init($q_{init}$); $ \mathcal{T}_b$.init($q_{goal}$);
-        \FOR{$k = 1 \ \TO \ K$}
-            \STATE $q_{rand} \leftarrow \Function{RANDOM\_CONFIG()}$;
-            \IF {$\textbf{not} \ (\Function{EXTEND\_RRT($\mathcal{T}_a$,$\;q_{rand} = Trapped$)})$}
-                \IF {$ (\Function{CONNECT\_RRT($\mathcal{T}_b,q_{new}$}) = Reached $}
-                    \RETURN $ \Function{PATH($\mathcal{T}_a,\mathcal{T}_b$)} $
-                \ENDIF
-            \STATE \Function{SWAP($\mathcal{T}_a,\mathcal{T}_b)$}
-            \ENDIF
-        \ENDFOR
-        \RETURN $Failure$
-    \end{algorithmic}
-\end{algorithm}
-
 % \begin{algorithm}[ht] 
 %     \caption{$\Function{RRT}^*$~\cite{karaman2011sampling}}
 %     \label{alg:RRTConnect}
@@ -398,25 +415,6 @@ results are listed in Figure WHAT. They show that
 
 %     \end{algorithmic}
 % \end{algorithm}
-
-\begin{algorithm}[ht] 
-    \caption{$\Function{Dimensionality Reduction}$}
-    \label{alg:DR}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-
-        \STATE Specify dimension, dimensionality reduction technique, and obstacle information
-        \STATE Generate random obstacles based off of obstacle information
-        \STATE Fit dimensionality reduction transform to the space
-        \STATE Transform the space
-        \STATE Run PRM* or RRTConnect over the space
-        \STATE Inverse transform the path back to the original dimension
-        \STATE Check for collisions
-        \RETURN Path\_length, duration, num\_failed
-    \end{algorithmic}
-\end{algorithm}
-
 
 \bibliographystyle{plain}
 \bibliography{bib}
