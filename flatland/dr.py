@@ -4,7 +4,6 @@ import planner
 import numpy as np
 import polytope
 import sklearn.cluster as cluster
-import sklearn.decomposition as decomp
 import scipy.spatial as spatial
 from ompl import geometric as og
 
@@ -71,36 +70,43 @@ class DRPlanner(object):
                     collision_count += 1
         return collision_count
 
-    def solve(self, st, gl, timeout=1.0):
+    def solve_low_dim(self, st, gl, timeout):
+        tr = self.fit(st, gl)
+        exit()
+        ld_obsts = self.low_dim_obstacles(tr)
+        ld_st_gl = tr.transform(np.array([st, gl]))
+        flpl = planner.FLPlanner(
+            dim=self.low_dim,
+            planner=self.pl,
+            obstacles=ld_obsts,
+            low_bound=self.low_bound,
+            high_bound=self.high_bound)
+        start = time.time()
+        res = flpl.solve(ld_st_gl[0], ld_st_gl[1], timeout)
+        end = time.time()
+        ld_path = res.get_solution()
+        hd_path = tr.inverse_transform(self.path_to_arr(ld_path))
+        hd_path = np.vstack((st, hd_path, gl))
+        return hd_path, end - start
+
+    def solve_high_dim(self, st, gl, timeout=1.0):
+        flpl = planner.FLPlanner(
+            dim=self.high_dim,
+            planner=self.pl,
+            obstacles=self.obstacles,
+            low_bound=self.low_bound,
+            high_bound=self.high_bound)
+        start = time.time()
+        res = flpl.solve(st, gl, timeout)
+        end = time.time()
+        res.write_to_file("sandbox/prmpath.txt")
+        flpl.save_obstacles()
+        path = res.get_solution()
+        route = self.path_to_arr(path)
+        return route, end - start
+
+    def solve(self, st, gl, timeout):
         if self.low_dim < self.high_dim:
-            tr = self.fit(st, gl)
-            ld_obsts = self.low_dim_obstacles(tr)
-            ld_st_gl = tr.transform(np.array([st, gl]))
-            flpl = planner.FLPlanner(
-                dim=self.low_dim,
-                planner=self.pl,
-                obstacles=ld_obsts,
-                low_bound=self.low_bound,
-                high_bound=self.high_bound)
-            start = time.time()
-            res = flpl.solve(ld_st_gl[0], ld_st_gl[1], timeout)
-            end = time.time()
-            ld_path = res.get_solution()
-            hd_path = tr.inverse_transform(self.path_to_arr(ld_path))
-            hd_path = np.vstack((st, hd_path, gl))
-            return hd_path, end - start
+            return self.solve_low_dim(st, gl, timeout)
         else:
-            flpl = planner.FLPlanner(
-                dim=self.high_dim,
-                planner=self.pl,
-                obstacles=self.obstacles,
-                low_bound=self.low_bound,
-                high_bound=self.high_bound)
-            start = time.time()
-            res = flpl.solve(st, gl, timeout)
-            end = time.time()
-            res.write_to_file("sandbox/prmpath.txt")
-            flpl.save_obstacles()
-            path = res.get_solution()
-            route = self.path_to_arr(path)
-            return route, end - start
+            return self.solve_high_dim(st, gl, timeout)

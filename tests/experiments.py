@@ -16,10 +16,13 @@ from ompl import geometric as og
 from collections import defaultdict
 
 
-planners = [og.PRM, og.RRTConnect]
-transformers = [cluster.FeatureAgglomeration, decomp.TruncatedSVD,
-                decomp.PCA, decomp.RandomizedPCA,
-                None]
+# planners = [og.PRM, og.RRTConnect]
+planners = [og.PRM]
+# transformers = [cluster.FeatureAgglomeration, decomp.TruncatedSVD,
+#                 decomp.PCA, decomp.RandomizedPCA,
+#                 None]
+transformers = [flatland.TrainedJL]
+
 
 planner_strs = ["PRM", "RRTConnect"]
 transformer_strs = ["FeatureAgglomeration", "TruncatedSVD",
