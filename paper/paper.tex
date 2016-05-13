@@ -139,20 +139,17 @@ techniques.
 \subsection{PCA}
 
 Principle Component Analysis, or PCA, transforms a set of variables into their
-``principle components", or linearly uncorrelated variables. In other words,
-the axes of the dataset in question are reoriented so the Rayleigh quotient,
-which is related to the covariance of the dataset, along the first axis is
-maximized. After the first axis has been set, the second axis is then set to
-maximize the Rayleigh quotient of the dataset along that axis, and so on, so
-that the first axis has the highest Rayleigh quotient, the second axis has the
-second highest, and so on. Dimensionality reduction is then performed by
-chopping off the axes with the lowest Rayleigh quotients (which corresponded to
-axes with the lowest variance).
-
-$$
-\mathbf{w}_{(1)} = {\operatorname{\arg\,max}}\, \left\{ \frac{\mathbf{w}^T\mathbf{X}^T \mathbf{X w}}{\mathbf{w}^T \mathbf{w}} \right\}
-$$
-
+``principal components", or linearly uncorrelated variables
+\cite{shlens2014pca}. Given an $m \times n$ matrix $\mathbf{X}$, you can find
+its principal components by finding an orthonormal matrix $\mathbf{P}$ in $
+\mathbf{Y} = \mathbf{PX} $ such that $\mathbf{C_Y} = \mathbf{YY}^T/n$. The rows
+of $\mathbf{P}$ are the principal components of $\mathbf{X}$. In other words,
+the axes of the dataset in question are reoriented so that the covariance of
+the data along the first axis is minimized. After the first axis has been set,
+the second axis is then set to minimize the covariance of the dataset along
+that axis, and so on, so that the first axis has the lowest covariance, the
+second axis has the second lowest, and so on. Dimensionality reduction is then
+performed by chopping off the axes with the high covariance.
 
 \subsection{Randomized PCA}
 
@@ -161,13 +158,24 @@ vectors of the components.
 
 \subsection{Feature Agglomeration}
 
-Feature Agglomeration groups together similar features to reduce the number of
+Feature Agglomeration is a form of hierarchical clustering in which clusters
+are merged or split successively \cite{featureagglomeration}. Feature
+Agglomeration groups together similar features to reduce the number of
 features. It does this by using agglomerative clustering, in which every data
 point starts as a cluster, and clusters are merged together.
 
 \subsection{Truncated SVD}
 
-Truncated SVD works best with sparse matrices.
+In singular value decomposition, a matrix $\mathbf{M}$ is factorized into the
+form $\mathbf{U} \Sigma \mathbf{V^*}$. $\Sigma$ is a diagonal matrix, and the
+entries of $\Sigma$ are the singular values of $\mathbf{M}$. In Truncated SVD,
+$\mathbf{M}$ is approximated by matrices $\mathbf{U_k} \Sigma_k
+\mathbf{V^*_k}$, where $ k < r $, $r$ being the number of non-zero singular
+values of the matrix \cite{maciejewski1989svd}. In effect you are approximating
+$\mathbf{M}$ by cutting off low-value singular values. In this sense Truncated
+SVD is similar to PCA; however, instead of cutting off the lowest eigenvalues
+of the coviarance matrix, you are cutting off the singular values of the
+matrix.
 
 \section{Methods}
 

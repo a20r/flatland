@@ -1,4 +1,9 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{featureagglomeration}
+{\em 2.3 Clustering: Hierarchical Clustering}.
+\newblock 2016.
+\newblock http://scikit-learn.org/stable/modules/clustering.html/.
 
 \bibitem{alonso2015multi}
 Javier Alonso-Mora, Stuart Baker, and Daniela Rus.
@@ -47,5 +52,17 @@ Steven~M LaValle.
 Tomas Lozano-Perez.
 \newblock Spatial planning: A configuration space approach.
 \newblock {\em Computers, IEEE Transactions on}, 100(2):108--120, 1983.
+
+\bibitem{maciejewski1989svd}
+Anthony~A Maciejewski and Charles~A Klein.
+\newblock The singular value decomposition: Computation and applications to
+  robotics.
+\newblock {\em The International journal of robotics research}, 8(6):63--79,
+  1989.
+
+\bibitem{shlens2014pca}
+Jonathon Shlens.
+\newblock A tutorial on principal component analysis.
+\newblock {\em arXiv preprint arXiv:1404.1100}, 2014.
 
 \end{thebibliography}
