@@ -16,6 +16,9 @@ Planning}
 \usepackage{amssymb}
 \usepackage{mathabx}
 
+\usepackage{mathptmx}
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+
 \usepackage{relsize}
 
 \usepackage{float}
@@ -123,11 +126,11 @@ $$
 
 \section{Methods}
 
-\textbf{Simplifications}: Although our aim is to show how dimensionality reduction techniques can speed up motion planning for robots, doing motion planning for an actual robot is extremely hard (specifying link geometry, defining constraints between links, etc). Therefore we limited ourselves to path planning for a point in $\mathbb{R}^n$, and we approximate obstacles as being convex polytopes. This is a valid simplification of the robot motion planning problem for several reasons. The first reason is that most real robots actually operate in a C-space similar to $\mathbb{R}^n$. This is because $\mathbb{RP}^3$, the space in which the rotation of a rigid body occurs, simplifies to $\mathbb{R}^3$ if the joint cannot make a full rotation. Second, in defining the C-space, the obstacle space takes into account the interaction of the robot geometry with obstacles. Therefore motion planning through the free space can be done using a point to represent the robot (since the geometry of the robot is implicitly included in the obstacle space). Therefore, although our simulations do not represent real robots and real obstacles, they do approximate them.
+\textbf{Simplifications}: Although our aim is to show how dimensionality reduction techniques can speed up motion planning for robots, doing motion planning for an actual robot is very hard (specifying link geometry, defining constraints between links, etc). Therefore we limited ourselves to path planning for a point in $\mathbb{R}^n$, and we approximated obstacles as being convex polytopes. This is a valid simplification of the robot motion planning problem for several reasons. The first reason is that most real robots actually operate in a C-space similar to $\mathbb{R}^n$. This is because $\mathbb{RP}^3$, the space in which the rotation of a rigid body occurs, simplifies to $\mathbb{R}^3$ if the joint cannot make a full rotation. Second, in defining the C-space, the obstacle space takes into account the interaction of the robot geometry with obstacles. Therefore motion planning through the free space can be done using a point to represent the robot (since the geometry of the robot is implicitly included in the obstacle space). Therefore, although our simulations do not represent real robots and real obstacles, they do approximate them.
 
 We implemented an n-dimensional world in which to test these algorithms. We structured our code so that we could run our tests in any space of dimension $d \geq 2$. We also made visualization scripts for the 2- and 3-dimensional tests (examples of which can be seen in Figs ~\ref{fig:2d_examples} and ~\ref{fig:3d_examples}).
 
-Next we made a random obstacle generator. We create n-dimensional convex polytopes by sampling $n^{2}$ random points on the n-sphere using the equations below. 
+Next we made a random obstacle generator. We create n-dimensional convex polytopes by sampling $n^{2}$ random points on the n-sphere. We did this for each point by choosing $n-1$ random angles and then defining $x_1$ through $x_n$ using the equations below.
 
 \begin{align*}
 x_1 &= r \cos(\phi_1) \\
@@ -138,7 +141,7 @@ x_{n-1} &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \cos(\phi_{n-1}) \\
 x_n &= r \sin(\phi_1) \cdots \sin(\phi_{n-2}) \sin(\phi_{n-1}) \,.
 \end{align*}
 
-We then run Feature Agglomeration, Truncated SVD, PCA, Kernel PCA, and Randomized PCA to reduce the dimensionality of the space. We then run PRM* on each of these reduced dimensionality spaces, as well as on the full-dimensionality space as a control. We then run an inverse transform on the paths that we find to return them to the full-dimensionality space. Then we do collision checking and check the number of collisions the path makes with the obstacles.
+We then ran Feature Agglomeration, Truncated SVD, PCA, and Randomized PCA to reduce the dimensionality of the space. We then ran PRM* and RRTConnect on each of these reduced dimensionality spaces, as well as on the full-dimensionality space as a control. We then run an inverse transform on the paths that we find to return them to the full-dimensionality space. Then we do collision checking and check the number of collisions the path makes with the obstacles.
 
 \section{Results}
 
@@ -218,47 +221,101 @@ You can see examples of our code running in Fig ~\ref{fig:3d_examples}. The resu
     \end{algorithmic}
 \end{algorithm}
 
+
 \begin{algorithm}[ht] 
-    \caption{$\Function{RRT}^*$~\cite{karaman2011sampling}}
-    \label{alg:RRTstar}
+    \caption{$\Function{EXTEND($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
+    \label{alg:EXTEND}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
-
-        \STATE $V \leftarrow \{x_{\Var{init}}\}$
-        \STATE $E \leftarrow \emptyset$
-        \FOR{$i = 1 \ \TO \ n$}
-            \STATE $\xr \leftarrow \Var{SampleFree}_i$
-            \STATE $\xnearest \leftarrow \Function{Nearest}(G = (V, E), \xr)$
-            \STATE $\xnew \leftarrow \Function{Steer}(\xnearest, \xr)$
-            \IF{$\Function{ObstacleFree}(\xnearest, \xnew)$}
-                \STATE $\xnear \leftarrow \Function{Near}(G = (V, E), \xnew,
-                \min \{\gamma \cdot \Function{RRT}(\log(|V|) / |V|)^{1 / d}, \eta\})$
-                \STATE $V \leftarrow V \cup \{\xnew\}$
-                \STATE $\xmin \leftarrow \xnearest$
-                \STATE $\cmin \leftarrow \Function{Cost}(\xnear) +
-                c(\Function{Line}(\xnearest, \xnew))$
-                \FORALL{$\xnear \in X_{\Var{near}}$}
-                    \STATE $C \leftarrow \cost(\xnear) + \linef{\xnear, \xnew}$
-                    \IF{$\Function{CollisionFree}(\xnear, \xnew) \wedge C < \cmin$}
-                        \STATE $\xmin \leftarrow \xnear$
-                        \STATE $\cmin \leftarrow C$
-                    \ENDIF
-                    \STATE $E \leftarrow E \cup \{(\xmin, \xnew)\}$
-                \ENDFOR
-                \FORALL{$\xnear \in X_{\Var{near}}$}
-                    \STATE $C \leftarrow \cost(\xnew) + \linef{\xnew, \xnear}$
-                    \IF{$\Function{CollisionFree}(\xnew, \xnear) \wedge C < \cost(\xnear)$}
-                        \STATE $\xparent \leftarrow \Function{Parent}(\xnear)$
-                        \STATE $E \leftarrow (E \backslash \{(\xparent, \xnear)\}) \cup \{(\xnew, \xnear)\}$
-                    \ENDIF
-                \ENDFOR
+        \STATE $ q_{near} \leftarrow \Function{NEAREST\_NEIGHBOR($q$,$\;\mathcal{T}$)} $
+        \IF{ $ \Function{NEW\_CONFIG($q$,$\;q_{near}$,$\;q_{new}$)} $}
+            \STATE $ \mathcal{T}.\text{add\_vertex($q_{new}$)}; $
+            \STATE $ \mathcal{T}.\text{add\_edge($q_{near}$,$\;q_{new}$)}; $
+            \IF{$ q_{new} = q $}
+                \RETURN $Reached$;
+            \ELSE
+                \RETURN $Advanced$;
             \ENDIF
-        \ENDFOR
-        \RETURN $G = (V, E)$
-
+        \ENDIF
+        \RETURN $Trapped$;
     \end{algorithmic}
 \end{algorithm}
+
+\begin{algorithm}[ht] 
+    \caption{$\Function{CONNECT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
+    \label{alg:CONNECT}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \REPEAT 
+            \STATE $S \leftarrow \Function{EXTEND($\mathcal{T}$,$\;q$)};$ 
+        \UNTIL {$ \textbf{not} \; (S = Advanced)$}
+        \RETURN $S;$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht] 
+    \caption{$\Function{RRTConnect($q_{init}$,$\;q_{goal}$)}$~\cite{kuffner2000rrt}}
+    \label{alg:RRTConnect}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \STATE $\mathcal{T}_a$.init($q_{init}$); $ \mathcal{T}_b$.init($q_{goal}$);
+        \FOR{$k = 1 \ \TO \ K$}
+            \STATE $q_{rand} \leftarrow \Function{RANDOM\_CONFIG()}$;
+            \IF {$\textbf{not} \ (\Function{EXTEND($\mathcal{T}_a$,$\;q_{rand} = Trapped$)})$}
+                \IF {$ (\Function{CONNECT($\mathcal{T}_b,q_{new}$}) = Reached $}
+                    \RETURN $ \Function{PATH($\mathcal{T}_a,\mathcal{T}_b$)} $
+                \ENDIF
+            \STATE \Function{SWAP($\mathcal{T}_a,\mathcal{T}_b)$}
+            \ENDIF
+        \ENDFOR
+        \RETURN $Failure$
+    \end{algorithmic}
+\end{algorithm}
+
+% \begin{algorithm}[ht] 
+%     \caption{$\Function{RRT}^*$~\cite{karaman2011sampling}}
+%     \label{alg:RRTConnect}
+%     \begin{algorithmic}[1]
+%         \setcounter{ALC@line}{0}
+%         \vspace*{1mm}
+
+%         \STATE $V \leftarrow \{x_{\Var{init}}\}$
+%         \STATE $E \leftarrow \emptyset$
+%         \FOR{$i = 1 \ \TO \ n$}
+%             \STATE $\xr \leftarrow \Var{SampleFree}_i$
+%             \STATE $\xnearest \leftarrow \Function{Nearest}(G = (V, E), \xr)$
+%             \STATE $\xnew \leftarrow \Function{Steer}(\xnearest, \xr)$
+%             \IF{$\Function{ObstacleFree}(\xnearest, \xnew)$}
+%                 \STATE $\xnear \leftarrow \Function{Near}(G = (V, E), \xnew,
+%                 \min \{\gamma \cdot \Function{RRT}(\log(|V|) / |V|)^{1 / d}, \eta\})$
+%                 \STATE $V \leftarrow V \cup \{\xnew\}$
+%                 \STATE $\xmin \leftarrow \xnearest$
+%                 \STATE $\cmin \leftarrow \Function{Cost}(\xnear) +
+%                 c(\Function{Line}(\xnearest, \xnew))$
+%                 \FORALL{$\xnear \in X_{\Var{near}}$}
+%                     \STATE $C \leftarrow \cost(\xnear) + \linef{\xnear, \xnew}$
+%                     \IF{$\Function{CollisionFree}(\xnear, \xnew) \wedge C < \cmin$}
+%                         \STATE $\xmin \leftarrow \xnear$
+%                         \STATE $\cmin \leftarrow C$
+%                     \ENDIF
+%                     \STATE $E \leftarrow E \cup \{(\xmin, \xnew)\}$
+%                 \ENDFOR
+%                 \FORALL{$\xnear \in X_{\Var{near}}$}
+%                     \STATE $C \leftarrow \cost(\xnew) + \linef{\xnew, \xnear}$
+%                     \IF{$\Function{CollisionFree}(\xnew, \xnear) \wedge C < \cost(\xnear)$}
+%                         \STATE $\xparent \leftarrow \Function{Parent}(\xnear)$
+%                         \STATE $E \leftarrow (E \backslash \{(\xparent, \xnear)\}) \cup \{(\xnew, \xnear)\}$
+%                     \ENDIF
+%                 \ENDFOR
+%             \ENDIF
+%         \ENDFOR
+%         \RETURN $G = (V, E)$
+
+%     \end{algorithmic}
+% \end{algorithm}
 
 \begin{algorithm}[ht] 
     \caption{$\Function{Dimensionality Reduction}$}
