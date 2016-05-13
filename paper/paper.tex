@@ -282,7 +282,7 @@ You can see examples of our code running in Fig.~\ref{fig:examples}. The
 results are listed in Figure WHAT. They show that 
 
 \begin{algorithm}[ht] 
-    \caption{$\Function{PRM}~\cite{karaman2011sampling}}
+    \caption{$\Function{PRM}$~\cite{karaman2011sampling}}
     \label{alg:PRM}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
@@ -291,8 +291,7 @@ results are listed in Figure WHAT. They show that
         \STATE $V \leftarrow \{x_{\Var{init}}\} \cup \{\Var{SampleFree}_i\}_{i=1,\ldots,n}$
         \STATE $E \leftarrow \emptyset$
         \FORALL{$v \in V$}
-            \STATE $U \leftarrow \Function{Near}(G = (V, E), x_{rand}, r);$
-            \STATE $ V \leftarrow V \cup {x_{rand}} $
+            \STATE $U \leftarrow \Function{NearestNeighbors}(v)$
             \FORALL{$u \in U $}
                 \IF{$\Function{CollisionFree}(v, u)$}
                     \STATE $E \leftarrow E \cup \{(v, u), (u, v)\}$
