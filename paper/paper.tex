@@ -99,7 +99,7 @@ during the preprocessing phase by sampling random points in the C-space and
 then adding them to the vertices in the roadmap within a certain radius of the
 point. The algorithm is described in Alg~\ref{alg:PRM}.
 
-\begin{algorithm}[t] 
+\begin{algorithm}[h!] 
     \caption{$\Function{PRM}$~\cite{karaman2011sampling}}
     \label{alg:PRM}
     \begin{algorithmic}[1]
@@ -123,7 +123,7 @@ point. The algorithm is described in Alg~\ref{alg:PRM}.
 
 \subsection{RRTConnect}
 
-\begin{algorithm}[t] 
+\begin{algorithm}[h!] 
     \caption{$\Function{Extend\_RRT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
     \label{alg:extend_RRT}
     \begin{algorithmic}[1]
@@ -143,7 +143,7 @@ point. The algorithm is described in Alg~\ref{alg:PRM}.
     \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[t] 
+\begin{algorithm}[h!] 
     \caption{$\Function{Connect\_RRT($\mathcal{T}$,$q$)}$~\cite{kuffner2000rrt}}
     \label{alg:connect_RRT}
     \begin{algorithmic}[1]
@@ -317,7 +317,7 @@ the normal equations and offsets for each facet on the polytope.
     \label{eq:nsphere}
 \end{align}
 
-\begin{algorithm}[ht] 
+\begin{algorithm}[h!] 
     \caption{$\Function{Dimensionality Reduction}$}
     \label{alg:DR}
     \begin{algorithmic}[1]
@@ -344,7 +344,9 @@ paths that we find to return them to the fully-dimensional space in order to
 verify that the path in the reduced dimension did not come into collision with
 obstacles. We collected data on the number of runs that fail to find a
 solution, the time it takes to run the algorithm, and the length of the
-solution if one was found.  A summary of this paragraph can be found in
+solution if one was found. Note, that the length of the path is computed after
+it has been transformed back into the original high dimensional space in order
+to make a fair comparison. A summary of this paragraph can be found in
 Algo.~\ref{alg:DR}.
 
 For our experiments, we varied the number of random obstacles in the scene, the
@@ -358,7 +360,20 @@ performance with varying levels of obstacle density. In the results presented,
 we are reducing from 8 dimensions to 6 dimensions and using mean radius of
 $14.8$ for the convex polytopes.
 
-\section{Results}
+\section{Results \& Discussion}
+
+Fig.~\ref{fig:plots} shows plots of various measures of performance using
+different methods of dimensionality reduction for motion planing. Please note
+that the Y-axes of these plots are not equivalent in the left and right column.
+The left and right columns show the results for RRTConnect and PRM algorithms
+respectively.  The first, second, and third row show the average path length,
+computational time in seconds, and number of failed runs out of 100
+respectively. For each dimensionality reduction technique, there are three bars
+presenting the results for 250, 300, and 350 randomly generated obstacles
+respectively. From the data we can see that both planners produced similarly
+sized paths for each dimensionality reduction technique, and that by not
+reducing the dimension, the planner is able to find a path roughly two times
+shorter.
 
 \begin{figure}[h!]
     \centering
@@ -377,16 +392,6 @@ Randomized PCA.}
 
 \end{figure}
 
-Fig.~\ref{fig:plots} shows plots of various measures of performance using
-different methods of dimensionality reduction for motion planing. The left and
-right columns show the results for RRTConnect and PRM algorithms respectively.
-The first, second, and third row show the average path length, computational
-time in seconds, and number of failed runs out of 100 respectively. For each
-dimensionality reduction technique, there are three bars presenting the results
-for 250, 300, and 350 randomly generated obstacles respectively. From the data
-we can see that both planners produced similarly sized paths for each
-dimensionality reduction technique, and that by not reducing the dimension, the
-planner is able to find a path roughly two times shorter.
 
 In terms of computational time, there is no significant difference between
 Truncated SVD, PCA, Randomized PCA, planning in the original space when
@@ -409,49 +414,37 @@ The RRTConnect algorithm had a much lower failure rate than PRM in all
 respective dimensionality reduction technique. This is due to the fact that
 RRTConnect is growing a tree towards the goal and PRM is randomly sampling and
 connecting points to a growing graph. For both algorithms, a similar trend
-exists for failure rate for planning in the reduced dimension space.
+exists for failure rates when planning in the reduced dimension space. For both
+planners, Feature Agglomeration failed more frequently than the rest of the
+techniques, and planning in the high dimensional space had the smallest failure
+rate. The higher failure rate for Feature Agglomeration is because Feature
+Agglomeration works best when features from the data can be combined due to
+repetition and redundancy. Since this data was in the $\mathbb{R}^n$ and the
+random obstacles were generated all over the space, Feature Agglomeration
+failed to produce an embedding that also worked for planning in the lower
+dimensional space. Aside from Feature Agglomeration, the dimensionality
+reduction techniques failed to find a path to the goal configuration between 20
+and 60 percent of the time for PRM and between 5 and 35 percent for RRTConnect.
+This is due to the projection of the higher dimensional obstacles into a lower
+dimension causing occlusions in the lower dimensional space where they would
+not exist in the higher dimension. However, these dimensionality reduction
+techniques can be seen as independent random variables for each run, therefore,
+you would be able to run the algorithm again with the same probability of
+failure. As the number of obstacles increased, so did the failure rate because
+the lower dimensional spaces become more densely populated with obstacles
+causing more occlusions.
 
-% \begin{algorithm}[ht] 
-%     \caption{$\Function{RRT}^*$~\cite{karaman2011sampling}}
-%     \label{alg:RRTConnect}
-%     \begin{algorithmic}[1]
-%         \setcounter{ALC@line}{0}
-%         \vspace*{1mm}
+From the data, we can see that dimensionality reduction techniques can reduce
+the optimality of the planning algorithm, but in multi-query planning
+algorithms, these techniques can significantly reduce the time needed to
+compute a solution. Based on the data, it seems that the Truncated SVD
+algorithm can be used to produce the lowest number of failures and produces
+similar results in the path length and computation time  as compared to the
+other techniques used. Also, we Can see that Feature Agglomeration fails to
+find a solution path more frequently than the other techniques, but produces
+shorter paths when it does find a path.
 
-%         \STATE $V \leftarrow \{x_{\Var{init}}\}$
-%         \STATE $E \leftarrow \emptyset$
-%         \FOR{$i = 1 \ \TO \ n$}
-%             \STATE $\xr \leftarrow \Var{SampleFree}_i$
-%             \STATE $\xnearest \leftarrow \Function{Nearest}(G = (V, E), \xr)$
-%             \STATE $\xnew \leftarrow \Function{Steer}(\xnearest, \xr)$
-%             \IF{$\Function{ObstacleFree}(\xnearest, \xnew)$}
-%                 \STATE $\xnear \leftarrow \Function{Near}(G = (V, E), \xnew,
-%                 \min \{\gamma \cdot \Function{RRT}(\log(|V|) / |V|)^{1 / d}, \eta\})$
-%                 \STATE $V \leftarrow V \cup \{\xnew\}$
-%                 \STATE $\xmin \leftarrow \xnearest$
-%                 \STATE $\cmin \leftarrow \Function{Cost}(\xnear) +
-%                 c(\Function{Line}(\xnearest, \xnew))$
-%                 \FORALL{$\xnear \in X_{\Var{near}}$}
-%                     \STATE $C \leftarrow \cost(\xnear) + \linef{\xnear, \xnew}$
-%                     \IF{$\Function{CollisionFree}(\xnear, \xnew) \wedge C < \cmin$}
-%                         \STATE $\xmin \leftarrow \xnear$
-%                         \STATE $\cmin \leftarrow C$
-%                     \ENDIF
-%                     \STATE $E \leftarrow E \cup \{(\xmin, \xnew)\}$
-%                 \ENDFOR
-%                 \FORALL{$\xnear \in X_{\Var{near}}$}
-%                     \STATE $C \leftarrow \cost(\xnew) + \linef{\xnew, \xnear}$
-%                     \IF{$\Function{CollisionFree}(\xnew, \xnear) \wedge C < \cost(\xnear)$}
-%                         \STATE $\xparent \leftarrow \Function{Parent}(\xnear)$
-%                         \STATE $E \leftarrow (E \backslash \{(\xparent, \xnear)\}) \cup \{(\xnew, \xnear)\}$
-%                     \ENDIF
-%                 \ENDFOR
-%             \ENDIF
-%         \ENDFOR
-%         \RETURN $G = (V, E)$
-
-%     \end{algorithmic}
-% \end{algorithm}
+\section{Conclusion}
 
 \bibliographystyle{plain}
 \bibliography{bib}
